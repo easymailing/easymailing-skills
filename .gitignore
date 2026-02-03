@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Config local (contiene rutas específicas del usuario)
+.release-config.json
+.content-config.json
+.kb-config.json
