@@ -12,3 +12,6 @@
 # Config local (contiene rutas específicas del usuario)
 **/.content-config.json
 **/.kb-config.json
+
+# Secrets
+**/.env
