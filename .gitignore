@@ -10,6 +10,5 @@
 *.swo
 
 # Config local (contiene rutas específicas del usuario)
-.release-config.json
-.content-config.json
-.kb-config.json
+**/.content-config.json
+**/.kb-config.json

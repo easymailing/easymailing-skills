@@ -6,7 +6,7 @@ Este repositorio contiene skills para Claude Code específicas del proyecto Easy
 
 - Cada skill tiene su propia carpeta con el archivo `.md` ejecutable
 - La documentación de diseño va en `[skill]/docs/`
-- La configuración local (`.kb-config.json`, `.content-config.json`) está ignorada en git
+- Cada skill tiene su archivo de configuración local en su carpeta (ignorado en git)
 
 ## Convenciones
 

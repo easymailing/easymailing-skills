@@ -11,7 +11,7 @@ Crea artículos de base de conocimiento para Easymailing, consultando código, n
 
 ### Archivo de configuración
 
-Verifica que existe `.kb-config.json` en la raíz del repo de skills. Si no existe, pregunta:
+Verifica que existe `.kb-config.json` en la carpeta de esta skill. Si no existe, pregunta:
 
 1. "¿Cuál es la ruta del proyecto Easymailing?"
 2. "¿Cuál es la ruta del vault de Obsidian?"
