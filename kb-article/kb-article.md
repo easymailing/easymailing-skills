@@ -44,9 +44,37 @@ Recuerda configurar las variables de entorno:
 
 ### Variables de entorno
 
-Verifica que existen antes de usar Zendesk o navegar la app:
-- `ZENDESK_API_TOKEN` - Para API de Zendesk
-- `EASYMAILING_TEST_PASSWORD` - Para login en app de test
+El archivo `.env` en la carpeta de la skill debe contener:
+```
+ZENDESK_API_TOKEN=tu_token_de_zendesk
+EASYMAILING_TEST_PASSWORD=password_del_usuario_test
+```
+
+## Script de Zendesk
+
+La skill incluye un script CLI para interactuar con la API de Zendesk:
+
+```bash
+# Listar categorías
+npx bun kb-article/scripts/zendesk.ts categories
+
+# Listar secciones de una categoría
+npx bun kb-article/scripts/zendesk.ts sections <category_id>
+
+# Buscar artículos
+npx bun kb-article/scripts/zendesk.ts search "término de búsqueda"
+
+# Obtener un artículo (para análisis de estilo)
+npx bun kb-article/scripts/zendesk.ts article <article_id>
+
+# Crear artículo como borrador
+npx bun kb-article/scripts/zendesk.ts create <section_id> --title "Título" --body "<html>" --locale es --draft
+
+# Añadir traducción
+npx bun kb-article/scripts/zendesk.ts translate <article_id> --title "Title" --body "<html>" --locale en
+```
+
+El script lee automáticamente `.kb-config.json` y `.env` de la carpeta de la skill.
 
 ## Flujo principal
 
@@ -86,33 +114,28 @@ Pregunta abierta:
 
 ### Paso 1.3: Consultar Zendesk
 
-Usando la API de Zendesk (`https://easymailing.zendesk.com`):
+Usa el script de Zendesk para obtener contexto:
 
 1. **Listar categorías y secciones**:
-   ```
-   GET /api/v2/help_center/categories
-   GET /api/v2/help_center/sections
+   ```bash
+   npx bun kb-article/scripts/zendesk.ts categories
+   npx bun kb-article/scripts/zendesk.ts sections <category_id>
    ```
    Presenta las opciones al usuario para elegir dónde ubicar el artículo.
 
 2. **Buscar artículos relacionados**:
-   ```
-   GET /api/v2/help_center/articles/search?query={tema}
+   ```bash
+   npx bun kb-article/scripts/zendesk.ts search "{tema}"
    ```
    Si encuentra artículos similares:
    - Informa al usuario para evitar duplicados
    - Sugiere posibles enlaces cruzados
 
-3. **Leer 2-3 artículos existentes**:
-   ```
-   GET /api/v2/help_center/articles/{id}
+3. **Leer 2-3 artículos existentes** (para análisis de estilo):
+   ```bash
+   npx bun kb-article/scripts/zendesk.ts article <article_id>
    ```
    Analiza el estilo y formato para mantener consistencia.
-
-**Autenticación Zendesk**:
-- HTTP Basic Auth
-- Usuario: `{zendesk_email}/token`
-- Password: valor de `ZENDESK_API_TOKEN`
 
 ## Fase 2: Investigación
 
@@ -335,30 +358,14 @@ Crea la carpeta y archivos:
 ### Paso 6.2: Publicar borrador en Zendesk
 
 1. **Crear artículo en español**:
+   ```bash
+   npx bun kb-article/scripts/zendesk.ts create {section_id} --title "{título}" --body "{HTML español}" --locale es --draft
    ```
-   POST /api/v2/help_center/sections/{section_id}/articles
-
-   {
-     "article": {
-       "title": "{título}",
-       "body": "{HTML español}",
-       "locale": "es",
-       "draft": true
-     }
-   }
-   ```
+   El comando devuelve el `article_id` y la URL del borrador.
 
 2. **Añadir traducción en inglés**:
-   ```
-   POST /api/v2/help_center/articles/{article_id}/translations
-
-   {
-     "translation": {
-       "title": "{título en inglés}",
-       "body": "{HTML inglés}",
-       "locale": "en"
-     }
-   }
+   ```bash
+   npx bun kb-article/scripts/zendesk.ts translate {article_id} --title "{título en inglés}" --body "{HTML inglés}" --locale en
    ```
 
 3. **Actualizar article-brief.md** con las URLs de los borradores
