@@ -1,6 +1,6 @@
 ---
 name: marketing-content
-description: Use when creating marketing content for Easymailing - releases, feature spotlights, tutorials, comparisons, industry trends, tips, or seasonal content. Also use when user says "crear contenido", "comunicar release", "escribir blog", or similar marketing requests.
+description: Use when creating marketing content for Easymailing - blog articles, integration pages, product pages, or newsletters. Also use when user says "crear contenido", "escribir blog", "crear integración", "página de producto", "newsletter", or similar requests.
 ---
 
 # Marketing Content para Easymailing
@@ -15,14 +15,25 @@ Verifica que existe `.content-config.json` en la carpeta de esta skill. Si no ex
 
 1. "¿Cuál es la ruta del proyecto Easymailing?"
 2. "¿Cuál es la ruta del vault de Obsidian?"
+3. "¿Cuál es el space_id de Storyblok?"
 
 Crea el archivo con esta estructura:
 
 ```json
 {
   "project_path": "{ruta al proyecto}",
-  "obsidian_vault_path": "{ruta al vault}"
+  "obsidian_vault_path": "{ruta al vault}",
+  "storyblok": {
+    "space_id": "{id del espacio de Storyblok}"
+  }
 }
+```
+
+### Variables de entorno
+
+El archivo `.env` en la carpeta de la skill debe contener:
+```
+STORYBLOK_TOKEN=tu_token_de_management_api
 ```
 
 ### Archivos de contexto en Obsidian
@@ -33,32 +44,29 @@ Antes de generar contenido, verifica que existen:
 
 Si no existen, pide al usuario que los cree primero.
 
-## Flujo principal
-
-```
-INICIO
-   ↓
-¿Qué tipo de contenido?
-   ↓
-[Menú de tipos] → Usuario elige
-   ↓
-FASE 1: Entrada según tipo
-   ↓
-FASE 2: Discusión interactiva
-   ↓
-FASE 3: Crear master-brief.md
-   ↓
-FASE 4: Generar contenido por canal
-   ↓
-Guardar en Obsidian
-```
-
 ## Paso 1: Preguntar tipo de contenido
 
 Muestra este menú y espera respuesta:
 
 ```
-¿Qué tipo de contenido quieres crear?
+¿Qué quieres crear?
+
+1. 📝 Blog - Artículo (release, tutorial, comparativa...)
+2. 🔌 Integración - Página de nueva integración
+3. 📦 Página de producto - Funcionalidad, solución...
+4. 📧 Newsletter - Comunicación con contenidos existentes
+```
+
+## Paso 2: Flujo según tipo
+
+---
+
+### 📝 Blog
+
+#### 2.1 Preguntar motivo
+
+```
+¿Sobre qué quieres escribir?
 
 1. 🚀 Release - Comunicar nueva versión
 2. ✨ Feature spotlight - Destacar feature existente
@@ -69,9 +77,9 @@ Muestra este menú y espera respuesta:
 7. 🎄 Estacional - Black Friday, Navidad, etc.
 ```
 
-## Paso 2: Flujo de entrada según tipo
+#### 2.2 Flujo de entrada según motivo
 
-### 🚀 Release
+##### 🚀 Release
 1. Lista las últimas 10 versiones/tags de git del proyecto Easymailing
 2. Pregunta: "¿Qué versión(es) quieres comunicar?" (puede elegir una o varias)
 3. Para cada versión seleccionada:
@@ -82,36 +90,36 @@ Muestra este menú y espera respuesta:
 5. Presenta features encontradas con recomendación de destacadas
 6. Usuario confirma/ajusta
 
-### ✨ Feature spotlight / 📖 Tutorial
+##### ✨ Feature spotlight / 📖 Tutorial
 1. Pregunta: "¿Qué feature o tema quieres destacar?"
 2. Busca en código y docs del proyecto Easymailing
 3. Presenta lo encontrado
 4. Usuario añade contexto adicional
 
-### ⚔️ Comparativa
+##### ⚔️ Comparativa
 1. Pregunta: "¿Con qué competidor quieres comparar?"
 2. Busca información del competidor en la web
 3. Lee product-marketing-context.md para ventajas de Easymailing
 4. Presenta comparación inicial
 5. Usuario complementa
 
-### 📰 Tendencia
+##### 📰 Tendencia
 1. Pregunta: "¿Qué tendencia o tema del sector?"
 2. Busca información en la web
 3. Usuario puede añadir links
 4. Conecta con Easymailing
 
-### 💡 Tips y trucos
+##### 💡 Tips y trucos
 1. Pregunta: "¿Tema específico o quieres sugerencias?"
 2. Si sugerencias: propone tips basados en features
 3. Usuario elige/refina
 
-### 🎄 Estacional
+##### 🎄 Estacional
 1. Pregunta: "¿Qué fecha o evento? (Black Friday, Navidad, etc.)"
 2. Propone ángulos y enfoques
 3. Usuario elige/ajusta
 
-## Paso 3: Discusión interactiva (FASE 2)
+#### 2.3 Discusión interactiva
 
 Por cada elemento destacado, pregunta UNA A UNA:
 
@@ -123,16 +131,17 @@ Por cada elemento destacado, pregunta UNA A UNA:
 
 Acuerda la narrativa general: "Este contenido se centra en..."
 
-## Paso 4: Crear master-brief.md (FASE 3)
+#### 2.4 Crear master-brief.md
 
 Genera el documento con esta estructura:
 
 ```markdown
-# {Tipo} - {Título} - Master Brief
+# {Motivo} - {Título} - Master Brief
 
 ## Metadata
 - Fecha: {fecha actual}
-- Tipo: {tipo elegido}
+- Motivo: {motivo elegido}
+- Contenido anterior relacionado: {link si existe}
 
 ## Audiencia
 - **Target principal:** {definido en discusión}
@@ -162,41 +171,11 @@ Genera el documento con esta estructura:
 
 Muestra el brief y pregunta: "¿Está bien o ajustamos algo?"
 
-## Paso 5: Selección de canales (FASE 4)
+#### 2.5 Generar artículo
 
-Pregunta usando AskUserQuestion con multiSelect:
+Invoca skill `marketing-skills:copywriting` con master-brief.
 
-```
-Master brief creado ✓
-
-¿Qué contenido quieres generar?
-
-[ ] 📝 Blog - Artículo narrativo completo
-[ ] 📧 Newsletter - Email para suscriptores
-[ ] 🐦 Twitter - Posts o hilo
-[ ] 💼 LinkedIn - Post profesional
-[ ] 📘 Facebook - Post intermedio
-[ ] 📢 Slack - Resumen para equipo interno
-[ ] 🎯 Teasers - Adelantos para generar expectación
-```
-
-## Paso 6: Generar contenido por canal
-
-Para cada canal seleccionado:
-
-1. Pregunta: "¿Genero {canal}?"
-2. Si confirma:
-   - **Blog**: Invoca skill `marketing-skills:copywriting` con master-brief
-   - **Newsletter**: Invoca skill `marketing-skills:email-sequence` con master-brief (ver formato newsletter abajo)
-   - **Twitter/LinkedIn/Facebook/Teasers**: Invoca skill `marketing-skills:social-content` con master-brief
-   - **Slack**: Genera resumen ejecutivo sin skill externa
-3. Muestra resultado
-4. Pregunta: "¿Ajustes o siguiente canal?"
-5. Repite hasta completar
-
-### Formato Blog
-
-Los artículos de blog SIEMPRE incluyen frontmatter YAML con metadatos:
+El artículo SIEMPRE incluye frontmatter YAML:
 
 ```markdown
 ---
@@ -214,9 +193,178 @@ meta_keywords: [{lista de keywords para SEO}]
 
 **Cálculo de reading_time**: ~200 palabras por minuto, redondear al minuto más cercano.
 
-### Formato Newsletter
+#### 2.6 Guardar y publicar
 
-Las newsletters SIEMPRE incluyen variantes A/B para asunto y preview text:
+1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Blog/{slug}/`
+   - `master-brief.md`
+   - `article.md`
+
+2. Crear en Storyblok como borrador:
+   ```bash
+   npx bun marketing-content/scripts/storyblok.ts create --content-type content-blog-article --name "{título}" --slug "{slug}" --data '{...}'
+   ```
+
+#### 2.7 Distribución (opcional)
+
+Preguntar: "¿Distribuir en redes?"
+
+```
+[ ] 🐦 Twitter - Posts o hilo
+[ ] 💼 LinkedIn - Post profesional
+[ ] 📘 Facebook - Post intermedio
+[ ] 🎯 Teasers - Adelantos
+[ ] 📢 Slack - Resumen interno
+```
+
+Para cada seleccionado:
+- **Twitter/LinkedIn/Facebook/Teasers**: Invoca skill `marketing-skills:social-content` con master-brief
+- **Slack**: Genera resumen ejecutivo sin skill externa
+
+Guardar en `Areas/Easymailing/Comunicacion/Blog/{slug}/social/`
+
+---
+
+### 🔌 Integración
+
+#### 2.1 Preguntar integración
+
+Pregunta: "¿Qué integración quieres crear?"
+
+#### 2.2 Obtener datos de Storyblok
+
+```bash
+npx bun marketing-content/scripts/storyblok.ts stories --content-type integration-category
+npx bun marketing-content/scripts/storyblok.ts stories --content-type integration-use-case
+```
+
+#### 2.3 Recopilar campos
+
+Pregunta uno a uno:
+
+- **Título**: Nombre de la integración (ej: "Integración de Easymailing con Shopify")
+- **Excerpt**: Resumen corto para listados
+- **Descripción**: Texto explicativo de qué hace y cómo funciona
+- **Enlace "Probar"**: URL para probar la integración
+- **Enlaces de interés**: Lista de links relacionados
+- **Categorías**: Selección múltiple de las obtenidas (o crear nueva)
+- **Casos de uso**: Selección múltiple de los obtenidos (o crear nuevo)
+- **Plan disponible**: Qué plan incluye esta integración
+
+#### 2.4 Confirmar
+
+Muestra resumen completo y pregunta: "¿Está bien o ajustamos algo?"
+
+#### 2.5 Guardar y publicar
+
+1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Integraciones/{slug}/`
+   - `integration.md`
+
+2. Crear en Storyblok como borrador:
+   ```bash
+   npx bun marketing-content/scripts/storyblok.ts create --content-type content-integration --name "{nombre}" --slug "{slug}" --data '{...}'
+   ```
+
+#### 2.6 Distribución (opcional)
+
+Preguntar: "¿Distribuir en redes?"
+
+(Mismo flujo que Blog)
+
+---
+
+### 📦 Página de producto
+
+#### 2.1 Preguntar tipo de página
+
+```
+¿Qué tipo de página quieres crear?
+
+1. Funcionalidad (ej: automatizaciones, segmentación)
+2. Solución (ej: email marketing para ecommerce)
+3. Otro (describir)
+```
+
+#### 2.2 Preguntar tema
+
+Pregunta: "¿Qué funcionalidad/solución quieres documentar?"
+
+#### 2.3 Obtener datos de Storyblok
+
+```bash
+# Componentes disponibles
+npx bun marketing-content/scripts/storyblok.ts components
+
+# Páginas existentes como referencia
+npx bun marketing-content/scripts/storyblok.ts stories --content-type content-static-page
+npx bun marketing-content/scripts/storyblok.ts story <story_id>
+```
+
+#### 2.4 Discusión interactiva
+
+Preguntas una a una:
+- ¿Cuál es el beneficio principal para el usuario?
+- ¿Qué problemas resuelve?
+- ¿Qué features específicas hay que destacar?
+- ¿Hay competidores que lo hagan diferente?
+
+#### 2.5 Proponer estructura
+
+Presenta:
+- Qué componentes usar y en qué orden
+- Textos para cada componente (headlines, descripciones, CTAs, bullets)
+- SEO metatags:
+  - `meta_title` (máx 60 caracteres)
+  - `meta_description` (máx 155 caracteres)
+  - `meta_keywords`
+  - `slug` URL
+
+Itera hasta que el usuario apruebe.
+
+#### 2.6 Guardar y publicar
+
+1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Paginas-Producto/{slug}/`
+   - `page-spec.md`
+
+2. Crear en Storyblok como borrador:
+   ```bash
+   npx bun marketing-content/scripts/storyblok.ts create --content-type content-static-page --name "{nombre}" --slug "{slug}" --data '{...}'
+   ```
+
+#### 2.7 Distribución (opcional)
+
+Preguntar: "¿Distribuir en redes?"
+
+(Mismo flujo que Blog)
+
+---
+
+### 📧 Newsletter
+
+#### 2.1 Listar contenidos recientes
+
+Lee de Obsidian los contenidos recientes:
+- `Areas/Easymailing/Comunicacion/Blog/` - blogs recientes
+- `Areas/Easymailing/Comunicacion/Integraciones/` - integraciones recientes
+- `Areas/Easymailing/Comunicacion/Paginas-Producto/` - páginas recientes
+
+Presenta lista con fecha y título.
+
+#### 2.2 Seleccionar contenidos
+
+Usuario selecciona cuáles incluir en la newsletter.
+
+#### 2.3 Discusión
+
+Preguntas:
+- "¿Añadir algo más?" (texto libre, anuncios, novedades no documentadas)
+- "¿Cuál es el enfoque general de esta newsletter?"
+- "¿Cuál es el CTA principal?"
+
+#### 2.4 Generar newsletter
+
+Invoca skill `marketing-skills:email-sequence` con los contenidos seleccionados.
+
+Formato obligatorio:
 
 ```markdown
 # Newsletter - {Título}
@@ -229,7 +377,7 @@ Las newsletters SIEMPRE incluyen variantes A/B para asunto y preview text:
 
 ---
 
-{Contenido del email}
+{Contenido del email con enlaces a los contenidos seleccionados}
 ```
 
 **Criterios para variantes A/B:**
@@ -237,17 +385,22 @@ Las newsletters SIEMPRE incluyen variantes A/B para asunto y preview text:
 - Asunto B: Enfoque emocional, con pregunta, o beneficio diferente
 - Los preview texts deben complementar cada asunto, no repetirlo
 
-**CTAs diferenciados:** Las newsletters se envían tanto a usuarios con cuenta como a leads sin cuenta. Incluir siempre dos CTAs:
+**CTAs diferenciados:**
 - CTA para usuarios existentes: "Abrir X", "Probar X en tu cuenta"
 - CTA para nuevos: "Crear cuenta gratis", "Registrarse gratis"
 
-### Componentes de Blog
+#### 2.5 Guardar
 
-Los blogs pueden incluir componentes especiales. Usar según el contexto del artículo:
+Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Newsletters/{fecha}-{slug}/`
+- `newsletter.md`
 
-#### CTA Block
-Call to action con claim + botón. Usar al final del artículo y opcionalmente intercalado.
+---
 
+## Componentes de Blog
+
+Los blogs pueden incluir componentes especiales:
+
+### CTA Block
 ```markdown
 {% cta %}
 claim: "{Frase que engancha o promete valor}"
@@ -256,44 +409,31 @@ button_url: "{URL destino}"
 {% endcta %}
 ```
 
-#### FAQs
-Preguntas frecuentes. Ideal para releases, tutoriales y comparativas.
-
+### FAQs
 ```markdown
 {% faqs %}
-- question: "{Pregunta}"
-  answer: "{Respuesta concisa}"
 - question: "{Pregunta}"
   answer: "{Respuesta concisa}"
 {% endfaqs %}
 ```
 
-#### Checklist
-Lista de verificación. Útil para tutoriales y guías.
-
+### Checklist
 ```markdown
 {% checklist title="{Título opcional}" %}
 - {Item 1}
 - {Item 2}
-- {Item 3}
 {% endchecklist %}
 ```
 
-#### Integration List
-Enlaces a integraciones de Easymailing. Usar cuando se mencionan integraciones.
-
+### Integration List
 ```markdown
 {% integrations %}
-- name: "{Nombre}"
-  url: "{URL a la integración}"
 - name: "{Nombre}"
   url: "{URL a la integración}"
 {% endintegrations %}
 ```
 
-#### Promo Card
-Tarjeta promocional destacada. Para ofertas o contenido relacionado.
-
+### Promo Card
 ```markdown
 {% promo %}
 title: "{Título}"
@@ -304,9 +444,7 @@ button_url: "{URL destino}"
 {% endpromo %}
 ```
 
-#### Testimonial
-Testimonio individual. Para social proof.
-
+### Testimonial
 ```markdown
 {% testimonial %}
 quote: "{Texto del testimonio}"
@@ -317,36 +455,37 @@ job_title: "{Cargo y empresa}"
 
 ### Cuándo usar cada componente
 
-| Tipo contenido | Componentes recomendados |
-|---------------|-------------------------|
+| Motivo de blog | Componentes recomendados |
+|----------------|-------------------------|
 | Release | CTA, FAQs |
 | Tutorial | CTA, Checklist, FAQs |
 | Comparativa | CTA, FAQs, Promo Card |
 | Feature spotlight | CTA, Testimonial |
 | Tips y trucos | CTA, Checklist |
 
-## Paso 7: Guardar en Obsidian
+## Script de Storyblok
 
-Determina carpeta destino:
-- Release → `Areas/Easymailing/Comunicacion/Releases/v{version}/`
-- Otros → `Areas/Easymailing/Comunicacion/Content/{YYYY-MM-DD}-{slug}/`
+La skill incluye un script CLI para interactuar con la API de Storyblok:
 
-Crea estructura:
+```bash
+# Listar componentes disponibles
+npx bun marketing-content/scripts/storyblok.ts components
+
+# Listar stories de un content type
+npx bun marketing-content/scripts/storyblok.ts stories --content-type content-static-page
+npx bun marketing-content/scripts/storyblok.ts stories --content-type content-blog-article
+npx bun marketing-content/scripts/storyblok.ts stories --content-type content-integration
+npx bun marketing-content/scripts/storyblok.ts stories --content-type integration-category
+npx bun marketing-content/scripts/storyblok.ts stories --content-type integration-use-case
+
+# Obtener una story específica (ver estructura/ejemplo)
+npx bun marketing-content/scripts/storyblok.ts story <story_id>
+
+# Crear story como borrador
+npx bun marketing-content/scripts/storyblok.ts create --content-type <type> --name <name> --slug <slug> --data <json>
 ```
-{carpeta}/
-├── master-brief.md
-├── blog.md (si generado)
-├── newsletter.md (si generado)
-├── slack.md (si generado)
-├── social/
-│   ├── twitter.md (si generado)
-│   ├── linkedin.md (si generado)
-│   └── facebook.md (si generado)
-└── teasers/
-    └── teasers.md (si generado)
-```
 
-Confirma: "Contenido guardado en {ruta}"
+El script lee automáticamente `.content-config.json` y `.env` de la carpeta de la skill.
 
 ## Referencias obligatorias
 
@@ -361,4 +500,26 @@ Para consistencia, lee el último contenido similar si existe.
 Leer de `.content-config.json`:
 - **Proyecto Easymailing**: `project_path`
 - **Vault Obsidian**: `obsidian_vault_path`
-- **Carpeta de contenido**: `Areas/Easymailing/Comunicacion/`
+- **Storyblok space_id**: `storyblok.space_id`
+
+## Estructura en Obsidian
+
+```
+Areas/Easymailing/Comunicacion/
+├── Blog/
+│   └── {slug}/
+│       ├── master-brief.md
+│       ├── article.md
+│       └── social/
+├── Integraciones/
+│   └── {slug}/
+│       ├── integration.md
+│       └── social/
+├── Paginas-Producto/
+│   └── {slug}/
+│       ├── page-spec.md
+│       └── social/
+└── Newsletters/
+    └── {fecha}-{slug}/
+        └── newsletter.md
+```

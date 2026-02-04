@@ -4,74 +4,108 @@ Skill para generar contenido de comunicación y marketing para Easymailing.
 
 ## Tipos de contenido
 
-| Tipo | Descripción |
-|------|-------------|
-| 🚀 Release | Comunicar nueva versión |
-| ✨ Feature spotlight | Destacar feature existente |
-| 📖 Tutorial | Cómo hacer X con Easymailing |
-| ⚔️ Comparativa | Easymailing vs alternativa |
-| 📰 Tendencia | Comentar novedad del sector |
-| 💡 Tips y trucos | Contenido educativo corto |
-| 🎄 Estacional | Black Friday, Navidad, etc. |
+| Tipo | Descripción | Destino |
+|------|-------------|---------|
+| 📝 Blog | Artículos (release, tutorial, comparativa...) | Storyblok + Obsidian |
+| 🔌 Integración | Página de nueva integración | Storyblok + Obsidian |
+| 📦 Página de producto | Funcionalidad, solución... | Storyblok + Obsidian |
+| 📧 Newsletter | Comunicación con contenidos existentes | Obsidian |
 
 ## Uso
 
 ```bash
-# Invocar skill (muestra menú de tipos)
 /marketing-content
-
-# Tipo específico
-/marketing-content release
-/marketing-content tutorial
-/marketing-content comparativa
 ```
 
 ## Flujo
 
-1. **Entrada** - Según el tipo, Claude busca información o pide contexto
-2. **Discusión** - Propone destacados, usuario confirma/ajusta y añade contexto
-3. **Master Brief** - Genera documento base con todo lo acordado
-4. **Selección de canales** - Usuario elige qué contenido generar
-5. **Generación** - Produce contenido por canal delegando a skills de marketing
+### Blog
+1. Elegir motivo (release, tutorial, comparativa, etc.)
+2. Recopilar información según motivo
+3. Discusión interactiva
+4. Crear master-brief
+5. Generar artículo
+6. Publicar en Storyblok + Obsidian
+7. Opcionalmente distribuir en redes
 
-## Canales disponibles
+### Integración
+1. Nombre de la integración
+2. Recopilar campos (título, descripción, categorías, casos de uso...)
+3. Publicar en Storyblok + Obsidian
+4. Opcionalmente distribuir en redes
+
+### Página de producto
+1. Tipo (funcionalidad, solución, otro)
+2. Discusión interactiva
+3. Proponer estructura con componentes
+4. Publicar en Storyblok + Obsidian
+5. Opcionalmente distribuir en redes
+
+### Newsletter
+1. Listar contenidos recientes
+2. Seleccionar cuáles incluir
+3. Discusión (añadir extras, enfoque, CTA)
+4. Generar con variantes A/B
+5. Guardar en Obsidian
+
+## Distribución en redes
+
+Después de crear Blog, Integración o Página de producto:
 
 | Canal | Descripción |
 |-------|-------------|
-| 📝 Blog | Artículo narrativo completo |
-| 📧 Newsletter | Email para suscriptores |
 | 🐦 Twitter | Posts o hilo |
 | 💼 LinkedIn | Post profesional |
 | 📘 Facebook | Post intermedio |
-| 📢 Slack | Resumen para equipo interno |
-| 🎯 Teasers | Adelantos para generar expectación |
-
-## Contenido generado
-
-```
-{carpeta}/
-├── master-brief.md
-├── blog.md
-├── newsletter.md
-├── slack.md
-├── social/
-│   ├── twitter.md
-│   ├── linkedin.md
-│   └── facebook.md
-└── teasers/
-    └── teasers.md
-```
+| 🎯 Teasers | Adelantos |
+| 📢 Slack | Resumen interno |
 
 ## Dónde se guarda
 
-El contenido se guarda en Obsidian:
-
 ```
 Areas/Easymailing/Comunicacion/
-├── Releases/v{version}/      ← releases
-└── Content/{fecha}-{slug}/   ← otro contenido
+├── Blog/{slug}/
+│   ├── master-brief.md
+│   ├── article.md
+│   └── social/
+├── Integraciones/{slug}/
+│   ├── integration.md
+│   └── social/
+├── Paginas-Producto/{slug}/
+│   ├── page-spec.md
+│   └── social/
+└── Newsletters/{fecha}-{slug}/
+    └── newsletter.md
+```
+
+## Storyblok content types
+
+| Tipo | Content type |
+|------|--------------|
+| Blog | `content-blog-article` |
+| Integración | `content-integration` |
+| Página de producto | `content-static-page` |
+
+## Configuración
+
+Archivo `.content-config.json`:
+
+```json
+{
+  "project_path": "{ruta al proyecto}",
+  "obsidian_vault_path": "{ruta al vault}",
+  "storyblok": {
+    "space_id": "{id del espacio}"
+  }
+}
+```
+
+Archivo `.env`:
+
+```
+STORYBLOK_TOKEN=tu_token_de_management_api
 ```
 
 ## Documentación
 
-- [Diseño detallado](docs/design.md)
+- [Diseño v2](../docs/plans/2026-02-04-marketing-content-v2-design.md)

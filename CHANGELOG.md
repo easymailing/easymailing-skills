@@ -4,6 +4,20 @@ Todos los cambios notables en este repositorio.
 
 ## [Unreleased]
 
+### Added
+- Carpeta centralizada `docs/plans/` para documentos de diseño
+
+### Changed
+- **`marketing-content` v2**: Rediseño completo de la estructura
+  - Menú simplificado a 4 tipos: Blog, Integración, Página de producto, Newsletter
+  - Blog ahora es contenido principal que va a Storyblok (`content-blog-article`)
+  - Newsletter es tipo independiente que agrupa contenidos existentes
+  - Distribución en redes (Twitter, LinkedIn, Facebook, Teasers, Slack) opcional para todo contenido web
+  - Los "motivos" de blog (release, tutorial, comparativa...) son submenú dentro de Blog
+  - Script `storyblok.ts` para crear borradores en Storyblok
+  - Nueva estructura en Obsidian: `Blog/`, `Integraciones/`, `Paginas-Producto/`, `Newsletters/`
+- Movidos documentos de diseño de `{skill}/docs/design.md` a `docs/plans/YYYY-MM-DD-{topic}-design.md`
+
 ## [1.0.0] - 2026-02-04
 
 ### Added

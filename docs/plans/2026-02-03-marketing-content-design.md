@@ -1,5 +1,8 @@
 # Marketing Content Skill - Design Document
 
+## Fecha
+2026-02-03
+
 ## Propósito
 
 Generar contenido de comunicación para Easymailing, analizando múltiples fuentes y produciendo material adaptado para cada canal con enfoque marketing. Soporta múltiples tipos de contenido, no solo releases.
@@ -264,7 +267,7 @@ El master-brief.md se pasa como contexto a cada skill.
 
 ## Estructura en Obsidian
 
-El vault (`/Users/sergio/Dev/knowledge/`) organiza el contenido así:
+El vault organiza el contenido así:
 
 ```
 knowledge/
@@ -333,9 +336,3 @@ Archivo: `.content-config.json` en el repo de la skill
 ```
 
 La primera ejecución pregunta por estas rutas si no existen.
-
-## Pendientes
-
-- [x] Crear style-guide.md inicial en Comunicacion/
-- [x] Renombrar carpeta de skill a `marketing-content`
-- [ ] Implementar la skill

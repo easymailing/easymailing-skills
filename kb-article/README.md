@@ -96,4 +96,4 @@ La skill usa estos endpoints:
 
 ## Documentación
 
-Ver [docs/design.md](docs/design.md) para el documento de diseño completo.
+Ver [docs/plans/2026-02-03-kb-article-design.md](../docs/plans/2026-02-03-kb-article-design.md) para el documento de diseño completo.

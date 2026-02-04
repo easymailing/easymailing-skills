@@ -1,5 +1,8 @@
 # Knowledge Base Article Skill - Design Document
 
+## Fecha
+2026-02-03
+
 ## Propósito
 
 Crear artículos de base de conocimiento para Easymailing, consultando código fuente, navegando la app cuando sea necesario, y publicando como borrador en Zendesk. Los artículos se generan en español e inglés, con HTML formateado usando los componentes disponibles.
@@ -313,9 +316,3 @@ Areas/Easymailing/Knowledge-Base/{YYYY-MM-DD}-{slug}/
 ```bash
 /kb-article
 ```
-
-## Pendientes
-
-- [ ] Implementar la skill
-- [ ] Crear README.md con instrucciones de uso
-- [ ] Añadir `.kb-config.json` a .gitignore del repo
