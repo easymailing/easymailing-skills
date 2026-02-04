@@ -219,11 +219,35 @@ Pregunta: "¿Esta estructura te parece bien o ajustamos algo?"
 
 Itera hasta que el usuario apruebe.
 
-## Fase 5: Generación
+## Fase 5: Redacción y revisión
 
-### Paso 5.1: Generar artículo en español
+### Paso 5.1: Redactar artículo en español (Markdown)
 
-Genera el HTML completo usando los componentes disponibles:
+Genera el artículo completo en **Markdown** para que el usuario pueda revisarlo fácilmente.
+
+Usa el formato estándar de Markdown:
+- `#`, `##`, `###` para títulos
+- `**texto**` para negritas
+- `-` o `*` para listas
+- `1.`, `2.`, `3.` para pasos numerados
+- `> texto` para notas o tips importantes
+- `[IMAGEN: descripción]` para placeholders de imágenes
+
+Muestra el Markdown y pregunta: "¿El artículo en español está bien o ajustamos algo?"
+
+Itera con el usuario hasta que apruebe el contenido.
+
+### Paso 5.2: Redactar artículo en inglés (Markdown)
+
+Una vez aprobado el español, genera la versión en inglés en Markdown.
+
+Muestra el Markdown y pregunta: "¿La versión en inglés está bien?"
+
+Itera hasta que el usuario apruebe.
+
+### Paso 5.3: Generar HTML final
+
+Una vez aprobados ambos idiomas, convierte el Markdown a HTML usando los componentes de Zendesk:
 
 **Alertas** (información importante):
 ```html
@@ -267,45 +291,14 @@ Genera el HTML completo usando los componentes disponibles:
     </tr>
   </tbody>
 </table>
-
-<!-- Sin borde -->
-<table class="no-border">
-  <tbody>
-    <tr>
-      <td>Item 1</td>
-      <td>Item 2</td>
-    </tr>
-  </tbody>
-</table>
-```
-
-**Listas con énfasis**:
-```html
-<ul>
-  <li><strong>Punto importante</strong></li>
-  <li><strong>Otro punto</strong></li>
-</ul>
-```
-
-**Alineación**:
-```html
-<p class="text-center">Texto centrado</p>
-<p class="text-right">Texto a la derecha</p>
 ```
 
 **Placeholders de imágenes**:
 ```html
-<!-- [CAPTURA: Descripción detallada de qué mostrar] -->
-<img src="PENDIENTE" alt="Descripción para accesibilidad">
+<p>(IMAGEN PENDIENTE: Descripción detallada de qué mostrar)</p>
 ```
 
-Muestra el HTML generado y pregunta: "¿El artículo en español está bien o ajustamos algo?"
-
-### Paso 5.2: Generar artículo en inglés
-
-Una vez aprobado el español, genera la versión en inglés.
-
-Muestra el HTML y pregunta: "¿La versión en inglés está bien?"
+El HTML se genera automáticamente sin mostrar al usuario (ya aprobó el contenido en Markdown).
 
 ## Fase 6: Publicación
 
@@ -316,8 +309,8 @@ Crea la carpeta y archivos:
 ```
 {obsidian_vault_path}/Areas/Easymailing/Knowledge-Base/{YYYY-MM-DD}-{slug}/
 ├── article-brief.md
-├── article-es.html
-├── article-en.html
+├── article-es.md
+├── article-en.md
 └── images.md
 ```
 
@@ -340,6 +333,28 @@ Crea la carpeta y archivos:
 ## Zendesk
 - Borrador ES: {URL después de publicar}
 - Borrador EN: {URL después de publicar}
+```
+
+**article-es.md** (HTML en bloque de código):
+```markdown
+# {Título en español}
+
+## HTML
+
+\`\`\`html
+{HTML del artículo en español}
+\`\`\`
+```
+
+**article-en.md** (HTML en bloque de código):
+```markdown
+# {Título en inglés}
+
+## HTML
+
+\`\`\`html
+{HTML del artículo en inglés}
+\`\`\`
 ```
 
 **images.md**:

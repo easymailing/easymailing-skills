@@ -13,6 +13,7 @@
  *   article <article_id>          - Obtener un artículo
  *   create <section_id>           - Crear artículo (usa --title, --body, --locale, --draft)
  *   translate <article_id>        - Añadir traducción (usa --title, --body, --locale)
+ *   update <article_id>           - Actualizar traducción (usa --locale, --title, --body)
  */
 
 import { readFileSync, existsSync } from "fs";
@@ -155,6 +156,8 @@ async function createArticle(sectionId: string, title: string, body: string, loc
         body,
         locale,
         draft,
+        permission_group_id: 208637, // Administradores
+        user_segment_id: null, // Visible para todos
       },
     }),
   });
@@ -178,6 +181,27 @@ async function createTranslation(articleId: string, title: string, body: string,
         body,
         locale,
       },
+    }),
+  });
+
+  const t = data.translation;
+  return {
+    id: t.id,
+    title: t.title,
+    locale: t.locale,
+    url: t.html_url,
+  };
+}
+
+async function updateTranslation(articleId: string, locale: string, title?: string, body?: string) {
+  const updateData: any = {};
+  if (title) updateData.title = title;
+  if (body) updateData.body = body;
+
+  const data = await request(`/articles/${articleId}/translations/${locale}.json`, {
+    method: "PUT",
+    body: JSON.stringify({
+      translation: updateData,
     }),
   });
 
@@ -268,8 +292,20 @@ async function main() {
         );
         break;
 
+      case "update":
+        if (!positional[1] || !flags.locale || (!flags.title && !flags.body)) {
+          throw new Error("Usage: update <article_id> --locale <locale> [--title <title>] [--body <body>]");
+        }
+        result = await updateTranslation(
+          positional[1],
+          flags.locale,
+          flags.title,
+          flags.body
+        );
+        break;
+
       default:
-        throw new Error(`Unknown command: ${command}. Available: categories, sections, search, article, create, translate`);
+        throw new Error(`Unknown command: ${command}. Available: categories, sections, search, article, create, translate, update`);
     }
 
     console.log(JSON.stringify({ success: true, data: result }, null, 2));

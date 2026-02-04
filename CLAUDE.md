@@ -36,3 +36,6 @@ Crea artículos de base de conocimiento para Zendesk. Consulta código, navega l
 
 ### marketing-content
 Genera contenido de comunicación y marketing para Easymailing (releases, tutoriales, comparativas, etc.). Ver [design.md](marketing-content/docs/design.md) para detalles.
+
+### release
+Gestiona el ciclo de release: analiza cambios, determina versión semver automáticamente, actualiza CHANGELOG, hace commit/push y crea release en GitHub.

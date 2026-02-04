@@ -8,6 +8,7 @@ Colección de skills para Claude Code orientadas a la gestión y comunicación d
 |-------|-------------|
 | [marketing-content](marketing-content/) | Genera contenido de marketing y comunicación |
 | [kb-article](kb-article/) | Crea artículos de base de conocimiento para Zendesk |
+| [release](release/) | Gestiona releases: versión semver, CHANGELOG, commit, push y GitHub release |
 
 ## Configuración
 
