@@ -1,5 +1,5 @@
 ---
-name: marketing-content
+name: em-marketing-content
 description: Use when creating marketing content for Easymailing - blog articles, integration pages, product pages, or newsletters. Also use when user says "crear contenido", "escribir blog", "crear integración", "página de producto", "newsletter", or similar requests.
 ---
 
@@ -241,7 +241,7 @@ npx bun marketing-content/scripts/storyblok.ts stories --content-type integratio
 
 Pregunta uno a uno:
 
-- **Título**: Nombre de la integración (ej: "Integración de Easymailing con Shopify")
+- **Título**: Nombre de la integración (ej: "Shopify")
 - **Excerpt**: Resumen corto para listados
 - **Descripción**: Texto explicativo de qué hace y cómo funciona
 - **Enlace "Probar"**: URL para probar la integración
@@ -254,17 +254,59 @@ Pregunta uno a uno:
 
 Muestra resumen completo y pregunta: "¿Está bien o ajustamos algo?"
 
-#### 2.5 Guardar y publicar
+#### 2.5 Generar contenido bilingüe
+
+**IMPORTANTE**: Las integraciones requieren contenido en español e inglés.
+
+Genera ambas versiones del contenido:
+- `excerpt` (ES) y `excerpt__i18n__en` (EN)
+- `content` (ES) y `content__i18n__en` (EN)
+- `connect` (ES) y `connect__i18n__en` (EN) - si la URL es diferente por idioma
+- `related_links[].title` (ES) y `related_links[].title__i18n__en` (EN)
+- `related_links[].url` (ES) y `related_links[].url__i18n__en` (EN) - si hay versión inglesa
+- `metatags.title`, `metatags.description` (ES) y versiones EN
+
+Estructura del JSON para Storyblok:
+
+```json
+{
+  "title": "Nombre",
+  "excerpt": "Resumen en español",
+  "excerpt__i18n__en": "Summary in English",
+  "content": { "type": "doc", "content": [...] },
+  "content__i18n__en": { "type": "doc", "content": [...] },
+  "connect": "https://url-es",
+  "connect__i18n__en": "https://url-en",
+  "related_links": [
+    {
+      "title": "Título ES",
+      "title__i18n__en": "Title EN",
+      "url": { "url": "https://..." },
+      "url__i18n__en": { "url": "https://..." }
+    }
+  ],
+  "metatags": {
+    "title": "Título SEO ES",
+    "description": "Descripción SEO ES",
+    "og_title": "Título SEO ES",
+    "og_description": "Descripción SEO ES"
+  }
+}
+```
+
+**Nota**: Los metatags en inglés se configuran manualmente en Storyblok o se añaden con sufijo `__i18n__en`.
+
+#### 2.6 Guardar y publicar
 
 1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Integraciones/{slug}/`
-   - `integration.md`
+   - `integration.md` (incluye ambos idiomas)
 
 2. Crear en Storyblok como borrador:
    ```bash
    npx bun marketing-content/scripts/storyblok.ts create --content-type content-integration --name "{nombre}" --slug "{slug}" --data '{...}'
    ```
 
-#### 2.6 Distribución (opcional)
+#### 2.7 Distribución (opcional)
 
 Preguntar: "¿Distribuir en redes?"
 
@@ -320,17 +362,34 @@ Presenta:
 
 Itera hasta que el usuario apruebe.
 
-#### 2.6 Guardar y publicar
+#### 2.6 Generar contenido bilingüe
+
+**IMPORTANTE**: Las páginas de producto requieren contenido en español e inglés.
+
+Para cada componente de texto, genera ambas versiones:
+- Campos de texto: `field` (ES) y `field__i18n__en` (EN)
+- Metatags en ambos idiomas
+
+Campos comunes con versión bilingüe:
+- `title` / `title__i18n__en`
+- `subtitle` / `subtitle__i18n__en`
+- `description` / `description__i18n__en`
+- `content` / `content__i18n__en`
+- `badge_text` / `badge_text__i18n__en`
+- `button_text` / `button_text__i18n__en`
+- URLs si son diferentes por idioma
+
+#### 2.7 Guardar y publicar
 
 1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Paginas-Producto/{slug}/`
-   - `page-spec.md`
+   - `page-spec.md` (incluye ambos idiomas)
 
 2. Crear en Storyblok como borrador:
    ```bash
    npx bun marketing-content/scripts/storyblok.ts create --content-type content-static-page --name "{nombre}" --slug "{slug}" --data '{...}'
    ```
 
-#### 2.7 Distribución (opcional)
+#### 2.8 Distribución (opcional)
 
 Preguntar: "¿Distribuir en redes?"
 

@@ -1,5 +1,5 @@
 ---
-name: kb-article
+name: em-kb-article
 description: Use when creating knowledge base articles for Easymailing. Also use when user says "crear artículo", "documentar", "base de conocimiento", "help center", "zendesk article", or similar documentation requests.
 ---
 

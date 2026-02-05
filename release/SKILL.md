@@ -1,5 +1,5 @@
 ---
-name: release
+name: em-release
 description: Use when the user wants to publish changes, create a release, commit to git, or says "haz release", "publica los cambios", "sube a git", "crear release".
 ---
 
