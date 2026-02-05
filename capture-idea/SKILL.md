@@ -14,28 +14,30 @@ Al invocar la skill, SIEMPRE muestra este menú primero:
 ```
 📥 ¿Qué quieres capturar?
 
-1. 🔗 URL o idea - Capturar un tweet, video, artículo o idea propia
-2. 🔖 Bookmarks - Exportar tus bookmarks de Twitter
-3. 🔥 Trending - Ver qué es tendencia y elegir qué guardar
-4. 📰 News - Ver noticias de actualidad y elegir
+1. 🔗 URL - Capturar un tweet, video o artículo
+2. 💡 Idea - Escribir una idea propia
+3. 🔖 Bookmarks - Exportar tus bookmarks de Twitter
+4. 🔥 Trending - Ver qué es tendencia y elegir qué guardar
+5. 📰 News - Ver noticias de actualidad y elegir
 
-Escribe el número o pega directamente una URL/texto.
+Escribe el número o pega directamente una URL.
 ```
 
 Si el usuario:
-- Escribe **1** → Pregunta: "Pega la URL o escribe tu idea:"
-- Escribe **2** → Ejecuta flujo de bookmarks
-- Escribe **3** → Ejecuta flujo de trending
-- Escribe **4** → Ejecuta flujo de news
+- Escribe **1** → Pregunta: "Pega la URL:"
+- Escribe **2** → Pregunta: "Escribe tu idea:"
+- Escribe **3** → Ejecuta flujo de bookmarks
+- Escribe **4** → Ejecuta flujo de trending
+- Escribe **5** → Ejecuta flujo de news
 - Pega una **URL** directamente → Ejecuta captura individual
-- Escribe **texto** que no es número ni URL → Trata como idea propia
 
 ## Invocación directa (opcional)
 
 También se puede invocar directamente con argumentos:
 
 ```bash
-capture-idea "https://x.com/usuario/status/123"   # Captura individual
+capture-idea "https://x.com/usuario/status/123"   # Captura URL
+capture-idea idea "Mi idea sobre X"               # Captura idea directa
 capture-idea bookmarks                            # Exportar bookmarks
 capture-idea bookmarks 20                         # Exportar últimos 20
 capture-idea trending                             # Ver trending
