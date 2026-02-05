@@ -14,7 +14,8 @@ Colección de skills para Claude Code orientadas a la gestión y comunicación d
 |-------|-------------|
 | [em-capture-idea](capture-idea/) | Captura material para contenido desde URLs, bookmarks de Twitter o trending |
 | [em-social-content](social-content/) | Genera posts bilingües para Twitter y LinkedIn desde el Inbox |
-| [em-marketing-content](marketing-content/) | Genera contenido completo: blog, integraciones, páginas, newsletters |
+| [em-marketing-content](marketing-content/) | Genera contenido completo: blog, integraciones, páginas |
+| [em-newsletter](newsletter/) | Crea emails adaptados por audiencia (activos, inactivos, suscriptores) |
 | [em-kb-article](kb-article/) | Crea artículos de base de conocimiento para Zendesk |
 | [em-release](release/) | Gestiona releases: versión semver, CHANGELOG, commit, push y GitHub release |
 
@@ -28,6 +29,9 @@ em-capture-idea          em-social-content
      │
      ▼
 em-marketing-content ──► Blog, Integraciones, Páginas
+     │
+     ▼
+em-newsletter ──► Emails por audiencia
 ```
 
 ## Configuración

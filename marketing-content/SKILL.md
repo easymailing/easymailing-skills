@@ -1,6 +1,6 @@
 ---
 name: em-marketing-content
-description: Use when creating marketing content for Easymailing - blog articles, integration pages, product pages, or newsletters. Also use when user says "crear contenido", "escribir blog", "crear integración", "página de producto", "newsletter", or similar requests.
+description: Use when creating marketing content for Easymailing - blog articles, integration pages, or product pages. Also use when user says "crear contenido", "escribir blog", "crear integración", "página de producto", or similar requests. For newsletters use em-newsletter skill instead.
 ---
 
 # Marketing Content para Easymailing
@@ -54,8 +54,9 @@ Muestra este menú y espera respuesta:
 1. 📝 Blog - Artículo (release, tutorial, comparativa...)
 2. 🔌 Integración - Página de nueva integración
 3. 📦 Página de producto - Funcionalidad, solución...
-4. 📧 Newsletter - Comunicación con contenidos existentes
 ```
+
+> **Nota:** Para newsletters usa la skill `em-newsletter`.
 
 ## Paso 2: Flujo según tipo
 
@@ -397,64 +398,6 @@ Preguntar: "¿Distribuir en redes?"
 
 ---
 
-### 📧 Newsletter
-
-#### 2.1 Listar contenidos recientes
-
-Lee de Obsidian los contenidos recientes:
-- `Areas/Easymailing/Comunicacion/Blog/` - blogs recientes
-- `Areas/Easymailing/Comunicacion/Integraciones/` - integraciones recientes
-- `Areas/Easymailing/Comunicacion/Paginas-Producto/` - páginas recientes
-
-Presenta lista con fecha y título.
-
-#### 2.2 Seleccionar contenidos
-
-Usuario selecciona cuáles incluir en la newsletter.
-
-#### 2.3 Discusión
-
-Preguntas:
-- "¿Añadir algo más?" (texto libre, anuncios, novedades no documentadas)
-- "¿Cuál es el enfoque general de esta newsletter?"
-- "¿Cuál es el CTA principal?"
-
-#### 2.4 Generar newsletter
-
-Invoca skill `marketing-skills:email-sequence` con los contenidos seleccionados.
-
-Formato obligatorio:
-
-```markdown
-# Newsletter - {Título}
-
-**Asunto A:** {Versión A del asunto}
-**Asunto B:** {Versión B del asunto - diferente enfoque/ángulo}
-
-**Preview text A:** {Preview para asunto A}
-**Preview text B:** {Preview para asunto B}
-
----
-
-{Contenido del email con enlaces a los contenidos seleccionados}
-```
-
-**Criterios para variantes A/B:**
-- Asunto A: Enfoque directo o informativo
-- Asunto B: Enfoque emocional, con pregunta, o beneficio diferente
-- Los preview texts deben complementar cada asunto, no repetirlo
-
-**CTAs diferenciados:**
-- CTA para usuarios existentes: "Abrir X", "Probar X en tu cuenta"
-- CTA para nuevos: "Crear cuenta gratis", "Registrarse gratis"
-
-#### 2.5 Guardar
-
-Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Newsletters/{fecha}-{slug}/`
-- `newsletter.md`
-
----
-
 ## Componentes de Blog
 
 Los blogs pueden incluir componentes especiales:
@@ -574,11 +517,8 @@ Areas/Easymailing/Comunicacion/
 │   └── {slug}/
 │       ├── integration.md
 │       └── social/
-├── Paginas-Producto/
-│   └── {slug}/
-│       ├── page-spec.md
-│       └── social/
-└── Newsletters/
-    └── {fecha}-{slug}/
-        └── newsletter.md
+└── Paginas-Producto/
+    └── {slug}/
+        ├── page-spec.md
+        └── social/
 ```
