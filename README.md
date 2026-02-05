@@ -2,13 +2,33 @@
 
 Colección de skills para Claude Code orientadas a la gestión y comunicación del proyecto Easymailing.
 
+## Instalación
+
+```bash
+/skill install https://github.com/easymailing/easymailing-skills.git
+```
+
 ## Skills disponibles
 
 | Skill | Descripción |
 |-------|-------------|
-| [marketing-content](marketing-content/) | Genera contenido de marketing y comunicación |
-| [kb-article](kb-article/) | Crea artículos de base de conocimiento para Zendesk |
-| [release](release/) | Gestiona releases: versión semver, CHANGELOG, commit, push y GitHub release |
+| [em-capture-idea](capture-idea/) | Captura material para contenido desde URLs, bookmarks de Twitter o trending |
+| [em-social-content](social-content/) | Genera posts bilingües para Twitter y LinkedIn desde el Inbox |
+| [em-marketing-content](marketing-content/) | Genera contenido completo: blog, integraciones, páginas, newsletters |
+| [em-kb-article](kb-article/) | Crea artículos de base de conocimiento para Zendesk |
+| [em-release](release/) | Gestiona releases: versión semver, CHANGELOG, commit, push y GitHub release |
+
+## Flujo de contenido
+
+```
+em-capture-idea          em-social-content
+     │                         │
+     ▼                         │
+  Inbox/ ──────────────────────┘
+     │
+     ▼
+em-marketing-content ──► Blog, Integraciones, Páginas
+```
 
 ## Configuración
 
@@ -19,8 +39,8 @@ En la primera ejecución, las skills que lo requieran solicitarán las rutas nec
 ```
 easymailing-skills/
 ├── {skill-name}/
-│   ├── {skill-name}.md    # Skill ejecutable
-│   ├── README.md          # Documentación de uso
+│   ├── SKILL.md           # Skill ejecutable
+│   ├── .{name}-config.json # Configuración local (gitignored)
 │   └── docs/
 │       └── design.md      # Documentación de diseño
 └── ...
