@@ -44,9 +44,9 @@ Lee de `.newsletter-config.json` en la carpeta de esta skill:
 ### 📝 Contenido
 
 1. Lista contenido reciente de Obsidian:
-   - `Areas/Easymailing/Comunicacion/Blog/`
-   - `Areas/Easymailing/Comunicacion/Integraciones/`
-   - `Areas/Easymailing/Comunicacion/Paginas-Producto/`
+   - `Areas/Easymailing/Comunicacion/Content/Blog/`
+   - `Areas/Easymailing/Comunicacion/Content/Integraciones/`
+   - `Areas/Easymailing/Comunicacion/Content/Paginas-Producto/`
 2. Usuario selecciona cuáles incluir
 3. Pregunta: "¿Añadir algo más?" (texto libre, novedades no documentadas)
 
@@ -154,15 +154,40 @@ Iterar hasta que el usuario apruebe.
 
 ## Paso 7: Guardar
 
-Ruta: `{obsidian_vault_path}/Areas/Easymailing/Comunicacion/Newsletters/{fecha}-{slug}/`
+Ruta: `{obsidian_vault_path}/Areas/Easymailing/Comunicacion/Content/Newsletters/{fecha}-{slug}/`
 
 Estructura:
 ```
 {fecha}-{slug}/
+├── brief.md        (siempre - resumen de qué se comunica y a quién)
 ├── email.md        (si eligió "Todos")
 ├── activos.md      (si eligió "Por audiencia" y seleccionó activos)
 ├── inactivos.md    (si eligió "Por audiencia" y seleccionó inactivos)
 └── newsletter.md   (si eligió "Por audiencia" y seleccionó suscriptores)
+```
+
+### brief.md
+
+```markdown
+---
+type: newsletter-brief
+created: YYYY-MM-DD
+---
+
+# {Tipo} - {Título} - Brief
+
+## Objetivo
+{Qué se quiere comunicar}
+
+## Audiencias
+{Lista de audiencias seleccionadas y por qué}
+
+## Puntos clave
+- {Punto 1}
+- {Punto 2}
+
+## CTA esperado
+{Qué acción queremos que tome el usuario}
 ```
 
 Cada archivo con el formato:
@@ -196,7 +221,7 @@ status: draft
 ## Paso 8: Confirmación
 
 ```
-✅ Guardado en Areas/Easymailing/Comunicacion/Newsletters/{fecha}-{slug}/
+✅ Guardado en Areas/Easymailing/Comunicacion/Content/Newsletters/{fecha}-{slug}/
 
 Archivos creados:
 - activos.md
@@ -214,4 +239,4 @@ Si se necesita versión en inglés, el usuario lo pide explícitamente y se gene
 ## Referencias
 
 Para consistencia, lee el último newsletter similar si existe en:
-`Areas/Easymailing/Comunicacion/Newsletters/`
+`Areas/Easymailing/Comunicacion/Content/Newsletters/`

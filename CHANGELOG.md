@@ -6,8 +6,23 @@ Todos los cambios notables en este repositorio.
 
 ### Added
 - Carpeta centralizada `docs/plans/` para documentos de diseño
+- **`social-content`**: Nuevas fuentes de contenido
+  - Menú de dos niveles: primero fuente (Inbox/Writing/Easymailing), luego item
+  - Fuente Writing: artículos de blog personal (Substack)
+  - Fuente Easymailing: Blog, Newsletters, Integraciones, Páginas de producto
+  - Style guide según fuente (Writing o Easymailing)
+- `brief.md` en todos los tipos de contenido (Blog, Newsletters, Integraciones, Páginas)
 
 ### Changed
+- **Reestructuración Obsidian**: Nueva estructura `Content/` centralizada
+  - `Comunicacion/Content/Blog/` - Artículos de blog (incluyendo releases)
+  - `Comunicacion/Content/Newsletters/` - Emails a usuarios
+  - `Comunicacion/Content/Integraciones/` - Páginas de integración
+  - `Comunicacion/Content/Paginas-Producto/` - Páginas de producto
+  - `Comunicacion/Social/` - Posts centralizados (eliminadas carpetas `social/` legacy)
+  - Cada contenido en carpeta con `brief.md` + archivo principal
+- **`marketing-content`**: Rutas actualizadas a nueva estructura `Content/`
+- **`newsletter`**: Rutas actualizadas + generación de `brief.md`
 - **`marketing-content` v2**: Rediseño completo de la estructura
   - Menú simplificado a 4 tipos: Blog, Integración, Página de producto, Newsletter
   - Blog ahora es contenido principal que va a Storyblok (`content-blog-article`)

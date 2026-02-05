@@ -132,12 +132,12 @@ Por cada elemento destacado, pregunta UNA A UNA:
 
 Acuerda la narrativa general: "Este contenido se centra en..."
 
-#### 2.4 Crear master-brief.md
+#### 2.4 Crear brief.md
 
 Genera el documento con esta estructura:
 
 ```markdown
-# {Motivo} - {Título} - Master Brief
+# {Motivo} - {Título} - Brief
 
 ## Metadata
 - Fecha: {fecha actual}
@@ -196,8 +196,8 @@ meta_keywords: [{lista de keywords para SEO}]
 
 #### 2.6 Guardar y publicar
 
-1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Blog/{slug}/`
-   - `master-brief.md`
+1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Content/Blog/{fecha}-{slug}/`
+   - `brief.md`
    - `article.md`
 
 2. Crear en Storyblok como borrador:
@@ -283,7 +283,8 @@ Estructura del JSON para Storyblok:
 
 #### 2.6 Guardar y publicar
 
-1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Integraciones/{slug}/`
+1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Content/Integraciones/{slug}/`
+   - `brief.md`
    - `integration.md` (incluye ambos idiomas)
 
 2. Crear en Storyblok como borrador:
@@ -362,7 +363,8 @@ Campos comunes con versión bilingüe:
 
 #### 2.7 Guardar y publicar
 
-1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Paginas-Producto/{slug}/`
+1. Guardar en Obsidian: `Areas/Easymailing/Comunicacion/Content/Paginas-Producto/{slug}/`
+   - `brief.md`
    - `page-spec.md` (incluye ambos idiomas)
 
 2. Crear en Storyblok como borrador:
@@ -484,16 +486,23 @@ Leer de `.content-config.json`:
 
 ```
 Areas/Easymailing/Comunicacion/
-├── Blog/
-│   └── {slug}/
-│       ├── master-brief.md
-│       └── article.md
-├── Integraciones/
-│   └── {slug}/
-│       └── integration.md
-└── Paginas-Producto/
-    └── {slug}/
-        └── page-spec.md
+├── Content/
+│   ├── Blog/
+│   │   └── {fecha}-{slug}/
+│   │       ├── brief.md
+│   │       └── article.md
+│   ├── Integraciones/
+│   │   └── {slug}/
+│   │       ├── brief.md
+│   │       └── integration.md
+│   └── Paginas-Producto/
+│       └── {slug}/
+│           ├── brief.md
+│           └── page-spec.md
+├── Social/
+│   └── {fecha}-{slug}.md
+├── style-guide.md
+└── product-marketing-context.md
 ```
 
 > **Nota:** Los posts para redes se guardan en `Social/` mediante la skill `em-social-content`.
