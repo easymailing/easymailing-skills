@@ -83,16 +83,54 @@ Lee el style-guide para contexto de marca:
 
 Por defecto, selecciona Twitter + LinkedIn si el usuario no especifica.
 
+## Paso 2.6: Tipo de post para Twitter (si seleccionado)
+
+Si el usuario eligió Twitter, preguntar:
+
+```
+¿Qué tipo de post para Twitter?
+
+1. 📝 Post original - Tu contenido propio
+2. 💬 Quote tweet - Citar el tweet original y añadir tu comentario
+3. 🧵 Hilo - Varios tweets conectados (para temas que requieren más desarrollo)
+4. 💡 Inspirado en - Usar la idea sin citar directamente
+```
+
+**Comportamiento según tipo:**
+
+### Post original
+- Contenido 100% tuyo basado en la idea/material
+- No menciona ni cita la fuente original
+- Máximo 280 caracteres
+
+### Quote tweet
+- Incluye el enlace al tweet original para citarlo
+- Tu comentario debe aportar valor (no solo "Esto es genial")
+- Formato: `{tu comentario}\n\n{url del tweet original}`
+- El comentario debe ser < 200 chars para dejar espacio al quote
+
+### Hilo
+- 3-7 tweets conectados
+- Primer tweet debe funcionar solo (gancho)
+- Numeración: 1/N, 2/N...
+- Último tweet con CTA o conclusión
+- Cada tweet < 280 chars
+
+### Inspirado en
+- Tomas la idea pero la haces tuya
+- No citas ni mencionas al autor original
+- Puedes adaptar el ángulo a tu audiencia
+- Útil cuando la fuente es en inglés y quieres crear contenido propio en español
+
 ## Paso 3: Generar posts
 
 Genera solo para las plataformas seleccionadas:
 
 ### Twitter (directo, casual)
-- Máximo 280 caracteres por tweet
 - Tono conversacional, directo
 - Emojis ok (sin abusar)
 - Hashtags relevantes (1-3 máximo)
-- Si el contenido lo amerita, puede ser hilo (indicar con 1/N, 2/N...)
+- Formato según tipo elegido en paso 2.6
 
 ### LinkedIn (profesional)
 - Extensión media (1000-1500 caracteres)
@@ -190,6 +228,7 @@ source: Inbox/bookmarks/2026-02-01-autor-id.md
 status: draft
 tags: [tag1, tag2]
 platforms: [twitter, linkedin, facebook, teasers, slack]
+twitter_type: original | quote | thread | inspired
 ---
 
 ## Twitter
