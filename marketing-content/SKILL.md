@@ -205,23 +205,7 @@ meta_keywords: [{lista de keywords para SEO}]
    npx bun marketing-content/scripts/storyblok.ts create --content-type content-blog-article --name "{título}" --slug "{slug}" --data '{...}'
    ```
 
-#### 2.7 Distribución (opcional)
-
-Preguntar: "¿Distribuir en redes?"
-
-```
-[ ] 🐦 Twitter - Posts o hilo
-[ ] 💼 LinkedIn - Post profesional
-[ ] 📘 Facebook - Post intermedio
-[ ] 🎯 Teasers - Adelantos
-[ ] 📢 Slack - Resumen interno
-```
-
-Para cada seleccionado:
-- **Twitter/LinkedIn/Facebook/Teasers**: Invoca skill `marketing-skills:social-content` con master-brief
-- **Slack**: Genera resumen ejecutivo sin skill externa
-
-Guardar en `Areas/Easymailing/Comunicacion/Blog/{slug}/social/`
+> **Nota:** Para distribuir en redes sociales, usa la skill `em-social-content`.
 
 ---
 
@@ -307,11 +291,7 @@ Estructura del JSON para Storyblok:
    npx bun marketing-content/scripts/storyblok.ts create --content-type content-integration --name "{nombre}" --slug "{slug}" --data '{...}'
    ```
 
-#### 2.7 Distribución (opcional)
-
-Preguntar: "¿Distribuir en redes?"
-
-(Mismo flujo que Blog)
+> **Nota:** Para distribuir en redes sociales, usa la skill `em-social-content`.
 
 ---
 
@@ -390,11 +370,7 @@ Campos comunes con versión bilingüe:
    npx bun marketing-content/scripts/storyblok.ts create --content-type content-static-page --name "{nombre}" --slug "{slug}" --data '{...}'
    ```
 
-#### 2.8 Distribución (opcional)
-
-Preguntar: "¿Distribuir en redes?"
-
-(Mismo flujo que Blog)
+> **Nota:** Para distribuir en redes sociales, usa la skill `em-social-content`.
 
 ---
 
@@ -511,14 +487,13 @@ Areas/Easymailing/Comunicacion/
 ├── Blog/
 │   └── {slug}/
 │       ├── master-brief.md
-│       ├── article.md
-│       └── social/
+│       └── article.md
 ├── Integraciones/
 │   └── {slug}/
-│       ├── integration.md
-│       └── social/
+│       └── integration.md
 └── Paginas-Producto/
     └── {slug}/
-        ├── page-spec.md
-        └── social/
+        └── page-spec.md
 ```
+
+> **Nota:** Los posts para redes se guardan en `Social/` mediante la skill `em-social-content`.

@@ -1,11 +1,11 @@
 ---
 name: em-social-content
-description: Genera posts para Twitter y LinkedIn desde el Inbox de capturas o ideas nuevas. Usa cuando el usuario dice "crear post", "publicar en redes", "social media", "tweet", "linkedin post", o quiere convertir material capturado en contenido para redes.
+description: Genera posts para redes sociales (Twitter, LinkedIn, Facebook) y comunicación interna (Slack). Usa cuando el usuario dice "crear post", "publicar en redes", "social media", "tweet", "linkedin post", "teaser", "slack", o quiere convertir material en contenido para distribución.
 ---
 
 # Social Content
 
-Genera posts bilingües (ES/EN) para Twitter y LinkedIn desde material capturado o ideas nuevas.
+Genera posts bilingües (ES/EN) para redes sociales y comunicación interna.
 
 ## Configuración
 
@@ -69,9 +69,23 @@ Lee el style-guide para contexto de marca:
 {obsidian_vault_path}/Areas/Easymailing/Comunicacion/style-guide.md
 ```
 
+## Paso 2.5: Elegir plataformas
+
+```
+¿Dónde quieres publicar?
+
+[ ] 🐦 Twitter - Posts o hilo
+[ ] 💼 LinkedIn - Post profesional
+[ ] 📘 Facebook - Post intermedio
+[ ] 🎯 Teasers - Adelantos cortos (para cualquier red)
+[ ] 📢 Slack - Resumen interno para el equipo
+```
+
+Por defecto, selecciona Twitter + LinkedIn si el usuario no especifica.
+
 ## Paso 3: Generar posts
 
-Genera 4 versiones con tonos diferenciados:
+Genera solo para las plataformas seleccionadas:
 
 ### Twitter (directo, casual)
 - Máximo 280 caracteres por tweet
@@ -87,7 +101,29 @@ Genera 4 versiones con tonos diferenciados:
 - Sin hashtags excesivos (3-5 máximo al final)
 - Incluir pregunta o CTA al final para engagement
 
+### Facebook (intermedio)
+- Extensión media (500-800 caracteres)
+- Tono amigable, cercano
+- Más visual, mencionar imagen/video si aplica
+- Emojis permitidos
+- CTA claro al final
+
+### Teasers (adelantos)
+- Ultra cortos (100-150 caracteres)
+- Generan curiosidad sin revelar todo
+- Funcionan en cualquier red
+- Formato: gancho + "Pronto más..." o similar
+
+### Slack (interno)
+- Resumen ejecutivo para el equipo
+- Tono directo, sin marketing
+- Bullet points con lo esencial
+- Links a recursos si aplica
+- NO requiere versión bilingüe (solo español)
+
 ## Paso 4: Mostrar preview
+
+Muestra solo las plataformas seleccionadas:
 
 ```
 📱 Posts generados:
@@ -107,6 +143,26 @@ Genera 4 versiones con tonos diferenciados:
 
 ### EN
 {post in English}
+
+## Facebook (si seleccionado)
+
+### ES
+{post en español}
+
+### EN
+{post in English}
+
+## Teasers (si seleccionado)
+
+### ES
+{teaser en español}
+
+### EN
+{teaser in English}
+
+## Slack (si seleccionado)
+
+{resumen interno - solo español}
 
 ---
 ¿Ok o ajusto algo?
@@ -133,6 +189,7 @@ created: YYYY-MM-DD
 source: Inbox/bookmarks/2026-02-01-autor-id.md
 status: draft
 tags: [tag1, tag2]
+platforms: [twitter, linkedin, facebook, teasers, slack]
 ---
 
 ## Twitter
@@ -150,10 +207,32 @@ tags: [tag1, tag2]
 
 ### EN
 {post in English}
+
+## Facebook
+
+### ES
+{post en español}
+
+### EN
+{post in English}
+
+## Teasers
+
+### ES
+{teaser en español}
+
+### EN
+{teaser in English}
+
+## Slack
+
+{resumen interno}
 ```
 
 - `source`: ruta relativa al item del Inbox usado (o `null` si fue idea nueva)
 - `status`: siempre `draft` al crear
+- `platforms`: lista de plataformas incluidas
+- Solo incluir las secciones de plataformas seleccionadas
 
 ## Paso 6: Mover item usado
 
