@@ -5,10 +5,16 @@ Colección de skills para Claude Code orientadas a la gestión y comunicación d
 ## Instalación
 
 ```bash
-/skill install https://github.com/easymailing/easymailing-skills.git
+npx skills install https://github.com/easymailing/easymailing-skills.git -g
 ```
 
 Instala todas las skills con prefijo `em-`.
+
+## Actualización
+
+```bash
+npx skills install https://github.com/easymailing/easymailing-skills.git -g --force
+```
 
 ## Skills disponibles
 
