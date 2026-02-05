@@ -103,9 +103,10 @@ async function getComponents() {
 }
 
 async function getStories(contentType?: string, perPage: number = 25) {
-  let endpoint = `/stories/?per_page=${perPage}`;
+  let endpoint = `/stories/?per_page=${perPage}&with_summary=1`;
   if (contentType) {
-    endpoint += `&content_type=${contentType}`;
+    // Use contain_component for filtering by content type
+    endpoint += `&contain_component=${contentType}`;
   }
 
   const data = await request(endpoint);
