@@ -59,12 +59,20 @@ Lee de `.newsletter-config.json` en la carpeta de esta skill:
 ## Paso 3: Elegir audiencias
 
 ```
-¿A quién enviar? (puedes elegir varias)
+¿A quién enviar?
 
+1. 🌐 Todos - Un solo email con CTA genérico
+2. 🎯 Por audiencia - Versiones adaptadas (CTA diferente)
+
+Si eliges "Por audiencia", selecciona cuáles:
 [ ] 👤 Usuarios activos - Tienen cuenta y la usan
 [ ] 😴 Usuarios inactivos - Registrados pero no usan
 [ ] 📧 Suscriptores newsletter - Solo email, sin cuenta
 ```
+
+**Opción 1 (Todos):** Genera un solo email con CTA neutro (ej: "Descubre más", "Ver novedades").
+
+**Opción 2 (Por audiencia):** Genera versiones separadas con CTAs adaptados.
 
 ## Paso 4: Leer contexto
 
@@ -151,9 +159,10 @@ Ruta: `{obsidian_vault_path}/Areas/Easymailing/Comunicacion/Newsletters/{fecha}-
 Estructura:
 ```
 {fecha}-{slug}/
-├── activos.md      (si se seleccionó)
-├── inactivos.md    (si se seleccionó)
-└── newsletter.md   (si se seleccionó suscriptores)
+├── email.md        (si eligió "Todos")
+├── activos.md      (si eligió "Por audiencia" y seleccionó activos)
+├── inactivos.md    (si eligió "Por audiencia" y seleccionó inactivos)
+└── newsletter.md   (si eligió "Por audiencia" y seleccionó suscriptores)
 ```
 
 Cada archivo con el formato:
