@@ -197,6 +197,7 @@ status: pending
 created: YYYY-MM-DD
 tags: [tag1, tag2]
 source_url: https://x.com/...
+linked_url: https://articulo.com/...   # Solo si hay enlace externo
 author: username
 ---
 
@@ -208,9 +209,14 @@ author: username
 
 {Texto original del tweet/artículo en su idioma}
 
+## Contenido enlazado
+
+{Resumen del artículo/recurso enlazado: 3-5 párrafos con los puntos clave}
+{Omitir esta sección si el tweet no tiene enlaces externos}
+
 ## Resumen
 
-{Resumen en español de qué trata: 2-4 frases explicando el contenido de forma clara}
+{Resumen general en español integrando tweet + artículo enlazado si existe}
 
 ## Notas
 
