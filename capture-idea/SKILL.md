@@ -160,33 +160,33 @@ capture-idea bookmarks 20   # Últimos 20
 
 2. **Filtrar ya exportados:**
    - Leer `source_url` de archivos existentes en `Inbox/bookmarks/`
-   - Mostrar solo los nuevos
+   - Si no hay nuevos, mostrar `"✅ No hay bookmarks nuevos"` y terminar
 
-3. **Mostrar lista:**
+3. **Mostrar progreso:**
    ```
-   📚 {N} bookmarks nuevos:
-
-   1. @user1: "Texto truncado del tweet..."
-   2. @user2: "Otro tweet..."
-
-   ¿Exportar todos, algunos (1,3,5), o cancelar?
+   📚 Procesando {N} bookmarks nuevos...
    ```
 
-4. **Para cada seleccionado:**
+4. **Para cada bookmark:**
    - Leer tweet completo con `bird read {url} --json`
    - Extraer fecha del tweet del campo `createdAt` (formato: "Wed Jan 21 13:47:22 +0000 2026" → 2026-01-21)
+   - **Detectar URLs externas** en el contenido del tweet (ver paso 4b)
    - Investigar contexto (autor, tema, por qué es relevante)
    - Generar resumen en español + notas con análisis de Claude
    - Guardar en `Inbox/bookmarks/{fecha-del-tweet}-{username}-{id}.md`
    - Eliminar de Twitter: `bird unbookmark {url}`
 
-5. **Resumen:**
-   ```
-   ✅ Exportados {N} bookmarks
+4b. **Extraer contenido enlazado (si hay URLs externas):**
+   - Detectar URLs en el texto del tweet
+   - **Ignorar:** URLs de `x.com`, `twitter.com`, URLs de imágenes/videos embedidos
+   - **Seguir:** Artículos de blog, noticias, documentación, GitHub repos, páginas de producto
+   - Para cada URL externa válida:
+     - Navegar con `WebFetch` y extraer contenido principal
+     - Generar resumen del artículo (3-5 párrafos con puntos clave)
+     - Añadir al archivo en sección `## Contenido enlazado`
+     - Añadir campo `linked_url` en frontmatter
 
-   - 2024-02-05-levelsio-123456.md
-   - 2024-02-05-naval-789012.md
-   ```
+5. **Generar digest consolidado** (ver sección "Digest final")
 
 ### Formato del archivo (bookmarks)
 
