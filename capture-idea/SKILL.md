@@ -223,6 +223,60 @@ author: username
 {Análisis de Claude: por qué es relevante, conexiones con tus intereses, posibles usos}
 ```
 
+### Digest final
+
+Al terminar de procesar todos los bookmarks, generar un digest consolidado. Se muestra en consola Y se guarda en Obsidian.
+
+**Salida en consola:**
+
+```
+✅ Procesados {N} bookmarks
+
+📊 Resumen rápido:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Tema            │ Autor        │ Punto clave             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ AI Agents       │ @levelsio   │ Agentes que facturan... │
+│ Email marketing │ @dhh        │ La muerte del spam...   │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+📝 Temas principales:
+- {Tema} ({N} bookmarks): {descripción breve}
+- ...
+
+Guardado en: Inbox/bookmarks/YYYY-MM-DD-digest.md
+```
+
+**Archivo digest en Obsidian:**
+
+Guardar en `Inbox/bookmarks/YYYY-MM-DD-digest.md`:
+
+```markdown
+---
+type: digest
+created: YYYY-MM-DD
+bookmarks_count: N
+---
+
+## Tabla resumen
+
+| Tema | Autor | Punto clave | Archivo |
+|------|-------|-------------|---------|
+| AI Agents | @levelsio | Agentes que facturan... | [[2026-03-04-levelsio-123]] |
+
+## Temas principales
+
+### {Tema} ({N} bookmarks)
+{Resumen narrativo de los bookmarks relacionados con este tema}
+
+### {Otro tema} ({N} bookmarks)
+{Resumen narrativo}
+
+## Conexiones y patrones
+
+{Observaciones sobre conexiones entre los bookmarks procesados, tendencias emergentes}
+```
+
 ---
 
 ## Flujo C: Trending / News
