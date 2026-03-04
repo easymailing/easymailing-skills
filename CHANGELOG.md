@@ -14,6 +14,11 @@ Todos los cambios notables en este repositorio.
 - `brief.md` en todos los tipos de contenido (Blog, Newsletters, Integraciones, Páginas)
 
 ### Changed
+- **`capture-idea`**: Mejora del flujo de bookmarks
+  - Procesamiento automático sin confirmación (se exportan todos los nuevos)
+  - Extracción de contenido enlazado: sigue URLs en tweets para resumir artículos
+  - Digest consolidado: tabla resumen + temas principales, mostrado en consola y guardado en Obsidian
+  - Nuevo formato de archivo bookmark con sección `## Contenido enlazado` y campo `linked_url`
 - **Reestructuración Obsidian**: Nueva estructura `Content/` centralizada
   - `Comunicacion/Content/Blog/` - Artículos de blog (incluyendo releases)
   - `Comunicacion/Content/Newsletters/` - Emails a usuarios
