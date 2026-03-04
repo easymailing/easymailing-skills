@@ -4,6 +4,8 @@ Todos los cambios notables en este repositorio.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-04
+
 ### Added
 - Carpeta centralizada `docs/plans/` para documentos de diseño
 - **`social-content`**: Nuevas fuentes de contenido
