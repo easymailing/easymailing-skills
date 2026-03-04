@@ -355,7 +355,7 @@ topic: "AI Agents"
 
 ## Confirmación final
 
-Al terminar cualquier flujo:
+Al terminar cualquier flujo (excepto Bookmarks, que usa el digest):
 
 ```
 ✅ Guardado en Inbox/{carpeta}/{archivo}.md
@@ -365,3 +365,5 @@ Tienes {N} items pendientes en tu Inbox:
 - {Y} bookmarks
 - {Z} trending
 ```
+
+Para el flujo de Bookmarks, la confirmación es el propio digest (ver "Digest final" en Flujo B).
