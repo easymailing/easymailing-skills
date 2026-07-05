@@ -10,5 +10,5 @@
 set -euo pipefail
 
 SLUG="${1:?Usage: preview-url.sh <full_slug>}"
-TOKEN=$(op read "op://Marcos OpenClaw/storyblok-cdn-token/credential")
+TOKEN=$(op read "op://Easymailing/storyblok-cdn-token/credential")
 echo "https://easymailing.com/${SLUG}?preview_secret=${TOKEN}"

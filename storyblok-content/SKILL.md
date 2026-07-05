@@ -127,7 +127,7 @@ El Management API (`getStoryById`) siempre devuelve la version **draft**. Para v
 ./scripts/cdn-get.sh blog/mi-articulo --draft
 ```
 
-El slug es el `full_slug` del story (sin `/` inicial). El token CDN se lee de 1Password (`op://Marcos OpenClaw/storyblok-cdn-token/credential`).
+El slug es el `full_slug` del story (sin `/` inicial). El token CDN se lee de 1Password (`op://Easymailing/storyblok-cdn-token/credential`).
 
 **Cuando usar:**
 - Antes de actualizar un story: comparar published vs draft para saber que cambio
