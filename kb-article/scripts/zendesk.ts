@@ -11,12 +11,14 @@
  *   sections <category_id>        - Listar secciones de una categoría
  *   search <query>                - Buscar artículos
  *   article <article_id>          - Obtener un artículo
+ *   translations <article_id>     - Obtener traducciones de un artículo
+ *   backup <article_id>           - Guardar backup JSON/Markdown del artículo y sus traducciones
  *   create <section_id>           - Crear artículo (usa --title, --body, --locale, --draft)
  *   translate <article_id>        - Añadir traducción (usa --title, --body, --locale)
  *   update <article_id>           - Actualizar traducción (usa --locale, --title, --body)
  */
 
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 
 // Encontrar el directorio de la skill (donde está .env y .kb-config.json)
@@ -147,6 +149,94 @@ async function getArticle(articleId: string) {
   };
 }
 
+async function getArticleTranslations(articleId: string) {
+  const data = await request(`/articles/${articleId}/translations.json`);
+  return data.translations.map((t: any) => ({
+    id: t.id,
+    title: t.title,
+    body: t.body,
+    locale: t.locale,
+    draft: t.draft,
+    url: t.html_url,
+    created_at: t.created_at,
+    updated_at: t.updated_at,
+    source_id: t.source_id,
+    source_type: t.source_type,
+    outdated: t.outdated,
+  }));
+}
+
+function slugify(input: string): string {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "article";
+}
+
+async function backupArticle(articleId: string, outDir?: string) {
+  const article = await getArticle(articleId);
+  const translations = await getArticleTranslations(articleId);
+  const backedUpAt = new Date().toISOString();
+  const outputDir = outDir || join(config.project_path, "docs/kb-workspace/v1.27/backups");
+  const baseName = `${backedUpAt.replace(/[:.]/g, "-")}-zendesk-${articleId}-${slugify(article.title)}`;
+  const jsonPath = join(outputDir, `${baseName}.json`);
+  const markdownPath = join(outputDir, `${baseName}.md`);
+  const payload = {
+    backed_up_at: backedUpAt,
+    source: "zendesk",
+    article,
+    translations,
+  };
+
+  mkdirSync(outputDir, { recursive: true });
+  writeFileSync(jsonPath, JSON.stringify(payload, null, 2));
+  writeFileSync(
+    markdownPath,
+    [
+      `# Backup Zendesk ${article.id} - ${article.title}`,
+      "",
+      `- Backed up at: ${backedUpAt}`,
+      `- Article URL: ${article.url}`,
+      `- Section ID: ${article.section_id}`,
+      `- Locales: ${translations.map((t: any) => t.locale).join(", ") || "none"}`,
+      `- JSON: ${jsonPath}`,
+      "",
+      "## Article",
+      "",
+      "```json",
+      JSON.stringify(article, null, 2),
+      "```",
+      "",
+      "## Translations",
+      "",
+      ...translations.flatMap((translation: any) => [
+        `### ${translation.locale} - ${translation.title}`,
+        "",
+        `- Translation ID: ${translation.id}`,
+        `- Draft: ${translation.draft}`,
+        `- Updated at: ${translation.updated_at}`,
+        "",
+        "```html",
+        translation.body || "",
+        "```",
+        "",
+      ]),
+    ].join("\n")
+  );
+
+  return {
+    article_id: article.id,
+    title: article.title,
+    backup_json: jsonPath,
+    backup_markdown: markdownPath,
+    locales: translations.map((t: any) => t.locale),
+    backed_up_at: backedUpAt,
+  };
+}
+
 async function createArticle(sectionId: string, title: string, body: string, locale: string = "es", draft: boolean = true) {
   const data = await request(`/sections/${sectionId}/articles.json`, {
     method: "POST",
@@ -267,6 +357,20 @@ async function main() {
         result = await getArticle(positional[1]);
         break;
 
+      case "translations":
+        if (!positional[1]) {
+          throw new Error("Usage: translations <article_id>");
+        }
+        result = await getArticleTranslations(positional[1]);
+        break;
+
+      case "backup":
+        if (!positional[1]) {
+          throw new Error("Usage: backup <article_id> [--out <directory>]");
+        }
+        result = await backupArticle(positional[1], flags.out);
+        break;
+
       case "create":
         if (!positional[1] || !flags.title || !flags.body) {
           throw new Error("Usage: create <section_id> --title <title> --body <body> [--locale es] [--draft]");
@@ -305,7 +409,7 @@ async function main() {
         break;
 
       default:
-        throw new Error(`Unknown command: ${command}. Available: categories, sections, search, article, create, translate, update`);
+        throw new Error(`Unknown command: ${command}. Available: categories, sections, search, article, translations, backup, create, translate, update`);
     }
 
     console.log(JSON.stringify({ success: true, data: result }, null, 2));

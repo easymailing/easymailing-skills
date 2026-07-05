@@ -67,6 +67,12 @@ npx bun kb-article/scripts/zendesk.ts search "término de búsqueda"
 # Obtener un artículo (para análisis de estilo)
 npx bun kb-article/scripts/zendesk.ts article <article_id>
 
+# Obtener traducciones de un artículo
+npx bun kb-article/scripts/zendesk.ts translations <article_id>
+
+# Guardar backup antes de modificar un artículo publicado
+npx bun kb-article/scripts/zendesk.ts backup <article_id> --out "{project_path}/docs/kb-workspace/v1.27/backups"
+
 # Crear artículo como borrador
 npx bun kb-article/scripts/zendesk.ts create <section_id> --title "Título" --body "<html>" --locale es --draft
 
@@ -136,6 +142,13 @@ Usa el script de Zendesk para obtener contexto:
    npx bun kb-article/scripts/zendesk.ts article <article_id>
    ```
    Analiza el estilo y formato para mantener consistencia.
+
+4. **Backup obligatorio antes de modificar artículos publicados**:
+   Si el artículo ya existe en Zendesk y se va a modificar, descarga un backup antes de redactar o actualizar contenido:
+   ```bash
+   npx bun kb-article/scripts/zendesk.ts backup <article_id> --out "{project_path}/docs/kb-workspace/v1.27/backups"
+   ```
+   Registra en el Evidence Pack las rutas del JSON y Markdown generados. No actualizar Zendesk si no existe backup.
 
 ## Fase 2: Investigación
 
