@@ -42,7 +42,10 @@ case "$(cfg .auth.tipo)" in
   header) fmt="$(cfg .auth.formato)"; args+=(-H "$(cfg .auth.nombre): ${fmt//\{token\}/$token}");;
   query)  sep='?'; [[ "$url" == *\?* ]] && sep='&'; url="$url${sep}$(cfg .auth.nombre)=$token";;
   basic)  usu="$(cfg .auth.usuario)"
-          if [[ "$usu" == *"{token}"* ]]; then args+=(-u "${usu//\{token\}/$token}:"); else args+=(-u "$(resolver "$usu"):$token"); fi;;
+          # Sentinel de OpenClaw: el proxy no lo ve dentro del base64, así que el almacén guarda
+          # la credencial Basic ya codificada y se envía literal.
+          if [[ "$token" == oc-sent-* ]]; then args+=(-H "Authorization: Basic $token")
+          elif [[ "$usu" == *"{token}"* ]]; then args+=(-u "${usu//\{token\}/$token}:"); else args+=(-u "$(resolver "$usu"):$token"); fi;;
 esac
 while IFS=$'\t' read -r k v; do [ -n "$k" ] && args+=(-H "$k: $v"); done < <(jq -r --arg s "$svc" '.[$s].cabeceras // {} | to_entries[] | "\(.key)\t\(.value)"' "$CONF")
 while [ $# -gt 0 ]; do

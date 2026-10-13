@@ -87,7 +87,10 @@ cat > "$T/serv2.json" <<'J'
 {"cm":{"base_url":"https://api.chartmogul.com/v1","hosts":["api.chartmogul.com"],"auth":{"tipo":"basic","usuario":"{token}"},"secreto":{"item":"cm","campo":"credential","env":"CM_TOKEN"}}}
 J
 rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv2.json" CM_TOKEN=oc-sent-v2-cm; "$REPO/bin/em-api" cm GET /ping >/dev/null)
-grep -qx 'oc-sent-v2-cm:' "$T/curl.args" && ok "14 basic token como usuario" || ko "14 basic token como usuario"
+# con sentinel (OpenClaw) el almacén guarda la credencial Basic ya codificada: cabecera literal, sin -u
+{ grep -qx 'Authorization: Basic oc-sent-v2-cm' "$T/curl.args" && ! grep -qx -- '-u' "$T/curl.args"; } && ok "14 basic con sentinel: cabecera literal" || ko "14 basic con sentinel: cabecera literal"
+rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv2.json"; "$REPO/bin/em-api" cm GET /ping >/dev/null)
+grep -qx 'SECRETO-FAKE-123:' "$T/curl.args" && ok "14b basic con token real: usuario {token}" || ko "14b basic con token real: usuario {token}"
 # 15b. userinfo en la URL no puede saltar la lista de hosts (api.stripe.com:x@evil.example)
 rm -f "$T/curl.args" "$T/curl.n"
 (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STRIPE_API_KEY=oc-sent-v2-st; "$REPO/bin/em-api" stripe GET 'https://api.stripe.com:x@evil.example/p' >/dev/null 2>&1); rc=$?

@@ -16,7 +16,7 @@ Skills comunes de Easymailing para cualquier IA (Claude Code, Codex, agentes Ope
 
 - Mac: `bin/install` (enlaza las skills en `~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills` y añade `bin/` al PATH).
 - Mac Mini (OpenClaw): `skills.load.extraDirs` incluye `~/easymailing-skills/skills`.
-- Credenciales en el Mac: cuenta de servicio de 1Password (vault «Marcos OpenClaw», solo lectura) con su token en el Llavero (`security add-generic-password -U -s em-1password-sa -a "$USER" -w`). En OpenClaw: sentinels.
+- Credenciales en el Mac: cuenta de servicio de 1Password (vault «Marcos OpenClaw», solo lectura) con su token en el Llavero (`security add-generic-password -U -s em-1password-sa -a "$USER" -w`). En OpenClaw: sentinels. Para servicios con `auth.tipo: basic` (ChartMogul, Zendesk) el almacén guarda la credencial Basic **ya codificada** (`base64(usuario:clave)`) y `em-api` la envía como `Authorization: Basic <sentinel>`: el proxy no sustituye un sentinel dentro del base64.
 
 ## Tests
 
