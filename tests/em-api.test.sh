@@ -16,8 +16,12 @@ case "$*" in *username*) echo "agente@easymailing.com";; *) echo "SECRETO-FAKE-1
 S
 cat > "$T/bin/curl" <<'S'
 #!/bin/bash
-printf '%s\n' "$@" > "$EMT/curl.args"
-cat "$EMT/curl.resp" 2>/dev/null || printf '{"ok":true}\n200'
+printf '%s\n' "$@" > "$EMT/curl.args"; printf '%s\n' "$@" >> "$EMT/curl.all"
+hdr=""; prev=""; for a in "$@"; do [ "$prev" = "-D" ] && hdr="$a"; prev="$a"; done
+n=$(cat "$EMT/curl.n" 2>/dev/null || echo 0); n=$((n+1)); echo $n > "$EMT/curl.n"
+if [ -f "$EMT/curl.resp.$n" ]; then src="$EMT/curl.resp.$n"; else src="$EMT/curl.resp"; fi
+if [ -f "$src.hdr" ] && [ -n "$hdr" ]; then cp "$src.hdr" "$hdr"; elif [ -n "$hdr" ]; then : > "$hdr"; fi
+cat "$src" 2>/dev/null || printf '{"ok":true}\n200'
 S
 chmod +x "$T/bin/"*
 run(){ (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STORYBLOK_SPACE_ID=123; unset STORYBLOK_MANAGEMENT_TOKEN ZENDESK_API_TOKEN; "$@") ; }
@@ -33,7 +37,7 @@ rm -f "$T/op.log"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STORYBLO
 { [ ! -f "$T/op.log" ] && grep -q 'Authorization: oc-sent-v2-abc' "$T/curl.args"; } && ok "3 sentinel" || ko "3 sentinel"
 # 4
 rm -rf "$T/tmp"/*; rm -f "$T/op.log"; run "$REPO/bin/em-api" storyblok GET /stories >/dev/null
-grep -q 'read op://Marcos OpenClaw/storyblok-management-token/credential SA=SA-TOKEN-FAKE' "$T/op.log" && ok "4 op con cuenta de servicio" || ko "4 op con cuenta de servicio"
+grep -q 'read op://Marcos OpenClaw/storyblok/credential SA=SA-TOKEN-FAKE' "$T/op.log" && ok "4 op con cuenta de servicio" || ko "4 op con cuenta de servicio"
 # 5
 printf 'error: token SECRETO-FAKE-123 invalido\n401' > "$T/curl.resp"
 all=$(run "$REPO/bin/em-api" storyblok GET /stories 2>&1); rc=$?
@@ -41,9 +45,20 @@ all=$(run "$REPO/bin/em-api" storyblok GET /stories 2>&1); rc=$?
 rm -f "$T/curl.resp"
 # 6
 rm -rf "$T/tmp"/*; rm -f "$T/op.log"; run "$REPO/bin/em-api" storyblok GET /a >/dev/null; run "$REPO/bin/em-api" storyblok GET /b >/dev/null
-n=$(grep -c storyblok-management-token "$T/op.log"); f=$(find "$T/tmp" -type f | head -1); m=$(stat -f %Lp "$f" 2>/dev/null)
+n=$(grep -c 'storyblok/credential' "$T/op.log"); f=$(find "$T/tmp" -type f | head -1); m=$(stat -f %Lp "$f" 2>/dev/null)
 { [ "$n" = 1 ] && [ "$m" = 600 ]; } && ok "6 cache 600" || ko "6 cache 600 (n=$n m=$m)"
 # 7
 run "$REPO/bin/em-api" zendesk check >/dev/null
 { grep -qx 'https://easymailing.zendesk.com/api/v2/users/me.json' "$T/curl.args" && grep -qx 'agente@easymailing.com/token:SECRETO-FAKE-123' "$T/curl.args"; } && ok "7 zendesk check basic" || ko "7 zendesk check basic"
+# 8. redirección: solo se sigue dentro de los hosts permitidos
+rm -f "$T/curl.n" "$T/curl.all" "$T"/curl.resp.*
+printf '\n301' > "$T/curl.resp.1"; printf 'location: https://api.storyblok.com/v2/cdn/stories/x?cv=1&version=published\r\n' > "$T/curl.resp.1.hdr"
+printf '{"story":{"id":1}}\n200' > "$T/curl.resp.2"
+out=$(run "$REPO/bin/em-api" storyblok-cdn GET /stories/x --query version=published); rc=$?
+{ [ $rc = 0 ] && grep -q '"id":1' <<<"$out" && [ "$(cat "$T/curl.n")" = 2 ]; } && ok "8a sigue redirección permitida" || ko "8a sigue redirección permitida"
+rm -f "$T/curl.n" "$T"/curl.resp.*
+printf '\n302' > "$T/curl.resp.1"; printf 'location: https://evil.example/robar\r\n' > "$T/curl.resp.1.hdr"
+run "$REPO/bin/em-api" storyblok-cdn GET /stories/x >/dev/null 2>&1; rc=$?
+{ [ $rc != 0 ] && [ "$(cat "$T/curl.n")" = 1 ]; } && ok "8b no sigue a host ajeno" || ko "8b no sigue a host ajeno"
+rm -f "$T/curl.n" "$T"/curl.resp.*
 echo "== $pass OK, $fail fallos"; rm -rf "$T"; [ $fail -eq 0 ]
