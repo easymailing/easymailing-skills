@@ -1,0 +1,25 @@
+{
+  "storyblok": {
+    "base_url": "https://mapi.storyblok.com/v1/spaces/{space_id}",
+    "hosts": ["mapi.storyblok.com"],
+    "auth": {"tipo": "header", "nombre": "Authorization", "formato": "{token}"},
+    "secreto": {"item": "storyblok-management-token", "campo": "credential", "env": "STORYBLOK_MANAGEMENT_TOKEN"},
+    "vars": {"space_id": {"env": "STORYBLOK_SPACE_ID", "valor": "310467"}},
+    "check": "/stories?per_page=1"
+  },
+  "storyblok-cdn": {
+    "base_url": "https://api.storyblok.com/v2/cdn",
+    "hosts": ["api.storyblok.com"],
+    "auth": {"tipo": "query", "nombre": "token"},
+    "secreto": {"item": "storyblok-cdn-token", "campo": "credential", "env": "STORYBLOK_CDN_TOKEN"},
+    "check": "/spaces/me"
+  },
+  "zendesk": {
+    "base_url": "https://{subdominio}.zendesk.com/api/v2",
+    "hosts": ["{subdominio}.zendesk.com"],
+    "auth": {"tipo": "basic", "usuario": "{email}/token"},
+    "secreto": {"item": "zendesk-api-token", "campo": "credential", "env": "ZENDESK_API_TOKEN"},
+    "vars": {"subdominio": {"env": "ZENDESK_SUBDOMAIN", "valor": "easymailing"}, "email": {"env": "ZENDESK_EMAIL", "item": "zendesk-api-token", "campo": "username"}},
+    "check": "/users/me.json"
+  }
+}
