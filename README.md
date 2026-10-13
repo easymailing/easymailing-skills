@@ -18,17 +18,23 @@ npx skills install https://github.com/easymailing/easymailing-skills.git -g --fo
 
 ## Skills disponibles
 
-| Skill | Para qué | Comando |
-|-------|----------|---------|
-| [em-capture-idea](skills/capture-idea/) | Guardar material para después | `/em-capture-idea` |
-| [em-social-content](skills/social-content/) | Posts para redes sociales | `/em-social-content` |
-| [em-marketing-content](skills/marketing-content/) | Blog, integraciones, páginas web | `/em-marketing-content` |
-| [em-newsletter](skills/newsletter/) | Emails a usuarios | `/em-newsletter` |
-| [em-kb-article](skills/kb-article/) | Método para redactar artículos de ayuda (repo help-center) | `/em-kb-article` |
-| [storyblok-content](skills/storyblok-content/) | Páginas y contenido en Storyblok CMS (CLI `sb`) | `/storyblok-content` |
-| [em-help-center](skills/help-center/) | Help Center nuevo de la Customer App (Zendesk, CLI `hc`) | `/em-help-center` |
-
-> `em-release` se retiró de este repo: la versión canónica vive en `easymailingv2-docker/.claude/skills/em-release` (junto al código que releasea).
+| Skill | Qué hace |
+|---|---|
+| [`em-capture-idea`](skills/capture-idea/) | Captura material para contenido desde URLs, texto libre, bookmarks de Twitter o trending |
+| [`em-chartmogul`](skills/chartmogul/) | ChartMogul de Easymailing en solo lectura: MRR, ARR, ARPA, número de clientes, tasas de bajas (clientes y MRR), LTV, búsqueda de clientes y  |
+| [`dataforseo`](skills/dataforseo/) | Datos SEO de DataForSEO por línea de comandos — volumen y dificultad de keywords, backlinks, SERP, competidores, tendencias, auditorías técn |
+| [`easymailing-admin-api`](skills/easymailing-admin-api/) | Consulta la Admin API interna de Easymailing: dashboard de plataforma, delivery servers y scores, IP blocks, salud/métricas/issues de una ap |
+| [`easymailing-kb`](skills/easymailing-kb/) | Busca en la documentación pública de Easymailing (help center, blog, API pública, integraciones, precios, legal) y es la fuente de verdad pa |
+| [`em-help-center`](skills/help-center/) | Help Center NUEVO de la Customer App (segunda marca de Zendesk, no pública hasta el lanzamiento): sincroniza los artículos Markdown del repo |
+| [`em-kb-article`](skills/kb-article/) | Use when creating knowledge base articles for Easymailing |
+| [`mailerq-api`](skills/mailerq-api/) | Diagnostica la infraestructura de envío de Easymailing con la API de MailerQ: tasas de entrega, bounces, bloqueos de IP, throttling, logs de |
+| [`em-marketing-content`](skills/marketing-content/) | Use when creating marketing content for Easymailing - blog articles, integration pages, or product pages |
+| [`em-newsletter`](skills/newsletter/) | Crea emails para usuarios de Easymailing |
+| [`snds`](skills/snds/) | Consulta Microsoft SNDS (Smart Network Data Services) para ver la reputación de nuestras IPs en Outlook/Hotmail: estado del listing y datos  |
+| [`em-social-content`](skills/social-content/) | Genera posts para redes sociales (Twitter, LinkedIn, Facebook) y comunicación interna (Slack) |
+| [`storyblok-content`](skills/storyblok-content/) | Storyblok CMS (web de easymailing.com) — crear y editar páginas, artículos de blog, integraciones, comparativas y landings; vista previa de  |
+| [`em-stripe`](skills/stripe/) | Stripe de Easymailing en solo lectura: cobros (y cobros fallidos), facturas, suscripciones, clientes y disputas |
+| [`em-zendesk-support`](skills/zendesk-support/) | Tickets de soporte de Easymailing en Zendesk (lectura): tickets abiertos o pendientes, detalle de un ticket con su conversación, búsqueda y  |
 
 ## Flujos de contenido
 
