@@ -14,7 +14,7 @@ Lee de `.newsletter-config.json` en la carpeta de esta skill:
 ```json
 {
   "obsidian_vault_path": "/ruta/al/vault",
-  "project_path": "/ruta/al/proyecto/easymailing"
+  "project_path": "/Users/sergio/Sites/easymailing/producto/easymailingv2-docker"
 }
 ```
 

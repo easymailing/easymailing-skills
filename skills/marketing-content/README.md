@@ -93,18 +93,11 @@ Archivo `.content-config.json`:
 ```json
 {
   "project_path": "{ruta al proyecto}",
-  "obsidian_vault_path": "{ruta al vault}",
-  "storyblok": {
-    "space_id": "{id del espacio}"
-  }
+  "obsidian_vault_path": "{ruta al vault}"
 }
 ```
 
-Archivo `.env`:
-
-```
-STORYBLOK_TOKEN=tu_token_de_management_api
-```
+Storyblok se usa a través de la skill `storyblok-content` (`sb`); las credenciales las gestiona `em-api` (sin `.env`).
 
 ## Documentación
 
