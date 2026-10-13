@@ -18,6 +18,7 @@ const sha = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 const leerJSON = (p, def) => (existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : def);
 const cfg = leerJSON(cfgPath, null) || fallo(`no hay zendesk.json en ${REPO}`);
 const estado = leerJSON(estPath, {});
+const zl = (l) => (cfg.locales_zendesk || {})[l] || l; // carpeta → locale de Zendesk
 
 // ---------- frontmatter ----------
 function parse(file) {
@@ -81,7 +82,7 @@ async function render(file, body, locale, adjuntos) {
     const destino = resolve(dirname(file), ref);
     if (!existsSync(destino)) return m;
     const id = parse(destino).fm.zendesk_id;
-    return id ? `href="https://${cfg.subdominio}.zendesk.com/hc/${locale}/articles/${id}${ancla}"` : m;
+    return id ? `href="https://${cfg.subdominio}.zendesk.com/hc/${zl(locale)}/articles/${id}${ancla}"` : m;
   });
   return html;
 }
@@ -131,7 +132,7 @@ async function sync() {
       const es = p.loc[cfg.locale_origen || "es"];
       const html = await render(es.file, es.body, "es", adjuntos);
       const r = apiOk("POST", `/help_center/sections/${p.secId}/articles.json`, { article: {
-        title: es.fm.titulo, body: html, locale: cfg.locale_origen || "es", draft: draft(es.fm),
+        title: es.fm.titulo, body: html, locale: zl(cfg.locale_origen || "es"), draft: draft(es.fm),
         permission_group_id: cfg.permission_group_id, user_segment_id: cfg.user_segment_id,
         label_names: es.fm.etiquetas || [] } });
       id = r.article.id; setFm(es.file, "zendesk_id", id);
@@ -143,14 +144,14 @@ async function sync() {
       const r = apiOk("POST", `/help_center/articles/${id}/attachments.json`, undefined, `file=@${img.path}`);
       adjuntos[img.path] = r.article_attachment.content_url; subidas = true;
     }
-    const existentes = new Set((apiOk("GET", `/help_center/articles/${id}/translations.json`).translations || []).map((t) => t.locale));
+    const existentes = new Set((apiOk("GET", `/help_center/articles/${id}/translations.json`).translations || []).map((t) => t.locale.toLowerCase()));
     for (const [l, v] of Object.entries(p.loc)) {
       const nuevo = p.accion === "crear" && l === (cfg.locale_origen || "es") && !subidas;
       if (nuevo) continue;
       if (p.accion === "actualizar" && !p.cambios.includes(l) && !subidas) continue;
       const translation = { title: v.fm.titulo, body: await render(v.file, v.body, l, adjuntos), draft: draft(v.fm) };
-      if (existentes.has(l)) apiOk("PUT", `/help_center/articles/${id}/translations/${l}.json`, { translation });
-      else apiOk("POST", `/help_center/articles/${id}/translations.json`, { translation: { locale: l, ...translation } });
+      if (existentes.has(zl(l).toLowerCase())) apiOk("PUT", `/help_center/articles/${id}/translations/${zl(l)}.json`, { translation });
+      else apiOk("POST", `/help_center/articles/${id}/translations.json`, { translation: { locale: zl(l), ...translation } });
     }
     estado[p.rel] = Object.fromEntries(Object.entries(p.loc).map(([l, v]) => [l, v.hash]));
     writeFileSync(estPath, JSON.stringify(estado, null, 2) + "\n");
@@ -169,16 +170,16 @@ function estructura() {
   if (dry || !pend.length) return;
   for (const c of cfg.categorias) {
     if (!cfg.ids.categorias[c.clave]) {
-      const id = apiOk("POST", "/help_center/categories.json", { category: { name: c.nombre.es, locale: "es" } }).category.id;
+      const id = apiOk("POST", "/help_center/categories.json", { category: { name: c.nombre.es, locale: zl("es") } }).category.id;
       cfg.ids.categorias[c.clave] = id;
-      if (c.nombre.en) apiOk("POST", `/help_center/categories/${id}/translations.json`, { translation: { locale: "en", title: c.nombre.en } });
+      if (c.nombre.en) apiOk("POST", `/help_center/categories/${id}/translations.json`, { translation: { locale: zl("en"), title: c.nombre.en } });
     }
     for (const s of c.secciones) {
       const k = `${c.clave}/${s.clave}`;
       if (cfg.ids.secciones[k]) continue;
-      const id = apiOk("POST", `/help_center/categories/${cfg.ids.categorias[c.clave]}/sections.json`, { section: { name: s.nombre.es, locale: "es" } }).section.id;
+      const id = apiOk("POST", `/help_center/categories/${cfg.ids.categorias[c.clave]}/sections.json`, { section: { name: s.nombre.es, locale: zl("es") } }).section.id;
       cfg.ids.secciones[k] = id;
-      if (s.nombre.en) apiOk("POST", `/help_center/sections/${id}/translations.json`, { translation: { locale: "en", title: s.nombre.en } });
+      if (s.nombre.en) apiOk("POST", `/help_center/sections/${id}/translations.json`, { translation: { locale: zl("en"), title: s.nombre.en } });
       writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
     }
   }

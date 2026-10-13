@@ -107,3 +107,14 @@ test("10 check detecta sección inexistente e imagen que falta", () => {
   const out = r.run("check"); assert.notEqual(out.status, 0);
   assert.match(out.stdout + out.stderr, /sección/i); assert.match(out.stdout + out.stderr, /imagen/i);
 });
+
+test("11 locales_zendesk: la carpeta en se publica como en-us", () => {
+  const r = repo();
+  const cfg = JSON.parse(readFileSync(join(r.d, "zendesk.json"), "utf8")); cfg.locales_zendesk = { en: "en-us" };
+  writeFileSync(join(r.d, "zendesk.json"), JSON.stringify(cfg));
+  r.art("es", "crear-segmento", fmBase, "# Hola");
+  r.art("en", "crear-segmento", { titulo: "Create a segment", seccion: "contactos/segmentos", estado: "borrador", traduccion_de: "x" }, "# Hello");
+  const out = r.run("sync"); assert.equal(out.status, 0, out.stderr);
+  const tr = r.escrituras().find((c) => /translations\.json$/.test(c.ruta) && c.metodo === "POST");
+  assert.equal(tr.data.translation.locale, "en-us");
+});
