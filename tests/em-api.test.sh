@@ -82,4 +82,10 @@ rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVI
 { grep -qx 'OpenAI-Beta: assistants=v2' "$T/curl.args" && grep -qx 'Authorization: Bearer oc-sent-v2-kb' "$T/curl.args"; } && ok "12 cabeceras extra" || ko "12 cabeceras extra"
 rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv.json" DFS_TOKEN='oc-sent-v2-QUJDOg=='; "$REPO/bin/em-api" dfs GET /appendix/user_data >/dev/null)
 grep -qx 'Authorization: Basic oc-sent-v2-QUJDOg==' "$T/curl.args" && ok "13 Basic literal" || ko "13 Basic literal"
+# 14. basic con el token como usuario y contraseña vacía (ChartMogul)
+cat > "$T/serv2.json" <<'J'
+{"cm":{"base_url":"https://api.chartmogul.com/v1","hosts":["api.chartmogul.com"],"auth":{"tipo":"basic","usuario":"{token}"},"secreto":{"item":"cm","campo":"credential","env":"CM_TOKEN"}}}
+J
+rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv2.json" CM_TOKEN=oc-sent-v2-cm; "$REPO/bin/em-api" cm GET /ping >/dev/null)
+grep -qx 'oc-sent-v2-cm:' "$T/curl.args" && ok "14 basic token como usuario" || ko "14 basic token como usuario"
 echo "== $pass OK, $fail fallos"; rm -rf "$T"; [ $fail -eq 0 ]

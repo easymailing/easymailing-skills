@@ -135,5 +135,54 @@
       "env": "EASYMAILING_ADMIN_API_TOKEN"
     },
     "check": "/dashboard_stats"
+  },
+  "chartmogul": {
+    "base_url": "https://api.chartmogul.com/v1",
+    "hosts": [
+      "api.chartmogul.com"
+    ],
+    "auth": {
+      "tipo": "basic",
+      "usuario": "{token}"
+    },
+    "secreto": {
+      "item": "chartmogul-api-key",
+      "campo": "credential",
+      "env": "CHARTMOGUL_API_KEY"
+    },
+    "check": "/ping"
+  },
+  "mailerq": {
+    "base_url": "https://bridge-agents.easymailing.com/mailerq-api",
+    "hosts": [
+      "bridge-agents.easymailing.com"
+    ],
+    "auth": {
+      "tipo": "header",
+      "nombre": "Authorization",
+      "formato": "Bearer {token}"
+    },
+    "secreto": {
+      "item": "mailerq-api-key",
+      "campo": "credential",
+      "env": "MAILERQ_API_TOKEN"
+    },
+    "check": "/stats/summary?hours=1"
+  },
+  "snds": {
+    "base_url": "https://substrate.office.com/ip-domain-management-snds/SNDS",
+    "hosts": [
+      "substrate.office.com"
+    ],
+    "auth": {
+      "tipo": "query",
+      "nombre": "Key"
+    },
+    "secreto": {
+      "item": "snds-key",
+      "campo": "credential",
+      "env": "SNDS_KEY"
+    },
+    "check": "/DataKey"
   }
 }
