@@ -64,5 +64,22 @@
       }
     },
     "check": "/users/me.json"
+  },
+  "dataforseo": {
+    "base_url": "https://api.dataforseo.com/v3",
+    "hosts": [
+      "api.dataforseo.com"
+    ],
+    "auth": {
+      "tipo": "header",
+      "nombre": "Authorization",
+      "formato": "Basic {token}"
+    },
+    "secreto": {
+      "item": "dataforseo",
+      "campo": "credential",
+      "env": "DATAFORSEO_API_TOKEN"
+    },
+    "check": "/appendix/user_data"
   }
 }

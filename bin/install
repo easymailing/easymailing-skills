@@ -26,6 +26,7 @@ if [ -z "${EM_INSTALL_SKIP_NPM:-}" ]; then
   for pkg in "$REPO"/skills/*/package.json; do
     d="$(dirname "$pkg")"; [ -d "$d/node_modules" ] && continue
     (cd "$d" && npm install --silent >/dev/null 2>&1) && echo "npm install en $(basename "$d")" || echo "AVISO npm install falló en $(basename "$d")"
+    if grep -q '"build"' "$pkg" && [ ! -d "$d/dist" ]; then (cd "$d" && npm run build --silent >/dev/null 2>&1) && echo "build en $(basename "$d")" || echo "AVISO build falló en $(basename "$d")"; fi
   done
 fi
 line="export PATH=\"$REPO/bin:\$PATH\"  # easymailing-skills (bin/install)"
