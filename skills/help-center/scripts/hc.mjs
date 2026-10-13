@@ -9,7 +9,8 @@ import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 
 const REPO = resolve(process.env.HELP_CENTER_DIR || process.cwd());
-const EM_API = process.env.EM_API_BIN || "em-api";
+// em-api del propio repo (bin/em-api) salvo que se indique otro: funciona sin tocar el PATH.
+const EM_API = process.env.EM_API_BIN || (() => { const r = join(import.meta.dirname, "..", "..", "..", "bin", "em-api"); return existsSync(r) ? r : "em-api"; })();
 const cfgPath = join(REPO, "zendesk.json");
 const estPath = join(REPO, ".sync-estado.json");
 

@@ -4,11 +4,12 @@
 // Antes de actualizar, publicar, despublicar o borrar guarda una copia del JSON actual;
 // si la copia falla, no escribe.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, writeFileSync, readFileSync, statSync, mkdtempSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, statSync, mkdtempSync, existsSync } from "node:fs";
 import { join, basename } from "node:path";
 import { homedir, tmpdir } from "node:os";
 
-const EM_API = process.env.EM_API_BIN || "em-api";
+// em-api del propio repo (bin/em-api) salvo que se indique otro: funciona sin tocar el PATH.
+const EM_API = process.env.EM_API_BIN || (() => { const r = join(import.meta.dirname, "..", "..", "..", "bin", "em-api"); return existsSync(r) ? r : "em-api"; })();
 const MD2RT = process.env.MD2RT_BIN || null;
 const SPACE_ID = process.env.STORYBLOK_SPACE_ID || "310467";
 const SITE = process.env.STORYBLOK_SITE_URL || "https://easymailing.com";

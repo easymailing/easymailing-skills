@@ -99,3 +99,10 @@ test("7 publicada usa la CDN con version published", () => {
   assert.equal(c.args[0], "storyblok-cdn");
   assert.equal(c.args[2], "/stories/blog/hola?version=published");
 });
+
+test("8 sin EM_API_BIN arranca (usa bin/em-api del repo)", () => {
+  const env = { ...process.env }; delete env.EM_API_BIN;
+  const r = spawnSync("node", [SB], { env, encoding: "utf8" });
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stderr, /uso: sb/);
+});
