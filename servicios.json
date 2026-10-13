@@ -49,7 +49,7 @@
     },
     "secreto": {
       "item": "zendesk-api-token",
-      "campo": "password",
+      "campo": "credential",
       "env": "ZENDESK_API_TOKEN"
     },
     "vars": {
