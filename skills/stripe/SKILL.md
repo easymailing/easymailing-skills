@@ -7,6 +7,8 @@ description: "Stripe de Easymailing en solo lectura: cobros (y cobros fallidos),
 
 CLI `st` sobre `em-api stripe` con una **clave restringida de solo lectura** (item `stripe-api-key`). En OpenClaw, mediante `gateway_exec`.
 
+`st` **no es un comando instalado**: invócalo siempre con `node` y la ruta del script (`SKILL_DIR` = carpeta de esta skill; en OpenClaw, `~/easymailing-skills/skills/stripe`).
+
 ```bash
 ST="node $SKILL_DIR/scripts/st.mjs"
 $ST check                                           # responde y comprueba que la clave es restringida

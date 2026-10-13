@@ -7,6 +7,8 @@ description: "Tickets de soporte de Easymailing en Zendesk (lectura): tickets ab
 
 CLI `zs` sobre `em-api zendesk` (cuenta principal `easymailing`). En OpenClaw, ejecútalo mediante `gateway_exec`.
 
+`zs` **no es un comando instalado**: invócalo siempre con `node` y la ruta del script (`SKILL_DIR` = carpeta de esta skill; en OpenClaw, `~/easymailing-skills/skills/zendesk-support`).
+
 ```bash
 ZS="node $SKILL_DIR/scripts/zs.mjs"
 $ZS metricas                                   # tickets por estado y abiertos con más de 7 días

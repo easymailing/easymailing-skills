@@ -7,6 +7,8 @@ description: "ChartMogul de Easymailing en solo lectura: MRR, ARR, ARPA, número
 
 CLI `cm` sobre `em-api chartmogul` (item `chartmogul-api-key`). En OpenClaw, mediante `gateway_exec`.
 
+`cm` **no es un comando instalado**: invócalo siempre con `node` y la ruta del script (`SKILL_DIR` = carpeta de esta skill; en OpenClaw, `~/easymailing-skills/skills/chartmogul`).
+
 ```bash
 CM="node $SKILL_DIR/scripts/cm.mjs"
 $CM metricas mrr [--desde AAAA-MM-DD] [--hasta AAAA-MM-DD] [--intervalo month]   # por defecto: últimos 12 meses
