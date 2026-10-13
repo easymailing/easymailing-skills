@@ -81,5 +81,59 @@
       "env": "DATAFORSEO_API_TOKEN"
     },
     "check": "/appendix/user_data"
+  },
+  "stripe": {
+    "base_url": "https://api.stripe.com/v1",
+    "hosts": [
+      "api.stripe.com"
+    ],
+    "auth": {
+      "tipo": "header",
+      "nombre": "Authorization",
+      "formato": "Bearer {token}"
+    },
+    "secreto": {
+      "item": "stripe-api-key",
+      "campo": "credential",
+      "env": "STRIPE_API_KEY"
+    },
+    "check": "/balance"
+  },
+  "openai-kb": {
+    "base_url": "https://api.openai.com/v1",
+    "hosts": [
+      "api.openai.com"
+    ],
+    "auth": {
+      "tipo": "header",
+      "nombre": "Authorization",
+      "formato": "Bearer {token}"
+    },
+    "cabeceras": {
+      "OpenAI-Beta": "assistants=v2"
+    },
+    "secreto": {
+      "item": "easymailing-kb-api-key",
+      "campo": "credential",
+      "env": "EASYMAILING_KB_API_KEY"
+    },
+    "check": "/vector_stores/vs_697921a6ab408191bfb8c96447b733da"
+  },
+  "admin-api": {
+    "base_url": "https://admin-api.easymailing.com/api/admin",
+    "hosts": [
+      "admin-api.easymailing.com"
+    ],
+    "auth": {
+      "tipo": "header",
+      "nombre": "X-Admin-Token",
+      "formato": "{token}"
+    },
+    "secreto": {
+      "item": "admin-api-token",
+      "campo": "credential",
+      "env": "EASYMAILING_ADMIN_API_TOKEN"
+    },
+    "check": "/dashboard_stats"
   }
 }
