@@ -7,7 +7,8 @@ import { join } from "node:path";
 
 const EM_API = process.env.EM_API_BIN || (() => { const r = join(import.meta.dirname, "..", "..", "..", "bin", "em-api"); return existsSync(r) ? r : "em-api"; })();
 const METRICAS = { todas: "all", mrr: "mrr", arr: "arr", arpa: "arpa", asp: "asp", clientes: "customer-count", "bajas-clientes": "customer-churn-rate", "bajas-mrr": "mrr-churn-rate", ltv: "ltv" };
-const DINERO = /^(mrr|arr|arpa|asp|ltv)(-|$)|mrr-/; // campos monetarios (céntimos)
+const DINERO = /^(mrr|arr|arpa|asp|ltv)(-|$)/; // campos monetarios (céntimos)…
+const esDinero = (k) => DINERO.test(k) && !/rate/.test(k); // …salvo las tasas (porcentajes)
 
 const fallo = (m, code = 1) => { process.stderr.write(`cm: ${m}\n`); process.exit(code); };
 function get(ruta, params = {}) {
@@ -20,7 +21,7 @@ const opciones = (argv) => { const o = {}; const pos = []; for (let i = 0; i < a
 const imprimir = (x) => process.stdout.write(JSON.stringify(x, null, 2) + "\n");
 const hoy = () => new Date().toISOString().slice(0, 10);
 const haceUnAnio = () => { const d = new Date(); d.setFullYear(d.getFullYear() - 1); return d.toISOString().slice(0, 10); };
-const aUnidades = (obj) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, typeof v === "number" && DINERO.test(k) ? Math.round(v) / 100 : v]));
+const aUnidades = (obj) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, typeof v === "number" && esDinero(k) ? Math.round(v) / 100 : v]));
 
 const [cmd, ...resto] = process.argv.slice(2);
 const { o, pos } = opciones(resto);

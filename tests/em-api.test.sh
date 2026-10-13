@@ -88,4 +88,13 @@ cat > "$T/serv2.json" <<'J'
 J
 rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv2.json" CM_TOKEN=oc-sent-v2-cm; "$REPO/bin/em-api" cm GET /ping >/dev/null)
 grep -qx 'oc-sent-v2-cm:' "$T/curl.args" && ok "14 basic token como usuario" || ko "14 basic token como usuario"
+# 15b. userinfo en la URL no puede saltar la lista de hosts (api.stripe.com:x@evil.example)
+rm -f "$T/curl.args" "$T/curl.n"
+(export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STRIPE_API_KEY=oc-sent-v2-st; "$REPO/bin/em-api" stripe GET 'https://api.stripe.com:x@evil.example/p' >/dev/null 2>&1); rc=$?
+{ [ $rc = 2 ] && [ ! -f "$T/curl.args" ]; } && ok "15b userinfo rechazado" || ko "15b userinfo rechazado"
+# 15c. redirección con userinfo no se sigue
+rm -f "$T/curl.n" "$T"/curl.resp.*; printf '\n302' > "$T/curl.resp.1"; printf 'location: https://api.storyblok.com:x@evil.example/x\r\n' > "$T/curl.resp.1.hdr"
+run "$REPO/bin/em-api" storyblok-cdn GET /stories/x >/dev/null 2>&1; rc=$?
+{ [ $rc != 0 ] && [ "$(cat "$T/curl.n" 2>/dev/null)" = 1 ]; } && ok "15c redirección con userinfo" || ko "15c redirección con userinfo"
+rm -f "$T/curl.n" "$T"/curl.resp.*
 echo "== $pass OK, $fail fallos"; rm -rf "$T"; [ $fail -eq 0 ]

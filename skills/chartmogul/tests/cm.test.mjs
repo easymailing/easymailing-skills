@@ -60,3 +60,14 @@ test("5 movimientos con tipo y desde, solo GET", () => {
   assert.match(c[0][2], /type=churn/); assert.match(c[0][2], /start-date=2026-10-01/);
   assert.equal(JSON.parse(r.stdout).movimientos[0].mrr, -49);
 });
+
+test("6 bajas-mrr: la tasa es porcentaje (no se divide); importes de todas sí", () => {
+  const e = entorno({
+    "GET /metrics/mrr-churn-rate": { entries: [{ date: "2026-09-30", "mrr-churn-rate": 3.2 }], summary: { current: 3.2, previous: 2.1, "percentage-change": 52 } },
+    "GET /metrics/all": { entries: [{ date: "2026-09-30", mrr: 590938, "mrr-expansion": 1500, "mrr-churn-rate": 3.2, "customer-churn-rate": 2.5, customers: 300 }] },
+  });
+  const b = JSON.parse(e.run("metricas", "bajas-mrr").stdout);
+  assert.equal(b.serie[0]["mrr-churn-rate"], 3.2); assert.equal(b.resumen.actual, 3.2);
+  const t = JSON.parse(e.run("metricas", "todas").stdout).serie[0];
+  assert.equal(t.mrr, 5909.38); assert.equal(t["mrr-expansion"], 15); assert.equal(t["mrr-churn-rate"], 3.2); assert.equal(t["customer-churn-rate"], 2.5); assert.equal(t.customers, 300);
+});

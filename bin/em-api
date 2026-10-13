@@ -32,8 +32,10 @@ base="$(resolver "$(cfg .base_url)")" || exit 2
 hosts="$(resolver "$(jq -r --arg s "$svc" '.[$s].hosts | join(" ")' "$CONF")")" || exit 2
 for h in $hosts; do [[ "$h" =~ ^[a-z0-9.-]+$ ]] || { echo "em-api: host no válido en la configuración: $h" >&2; exit 2; }; done
 if [[ "$ruta" == http* ]]; then url="$ruta"; else url="$base$ruta"; fi
+# userinfo (usuario[:clave]@host) permitiría que la regex de host viera un host y curl conectara a otro
+authority_con_userinfo() { local r="${1#*://}"; r="${r%%[/?#]*}"; [[ "$r" == *@* ]]; }
 host="$(printf '%s' "$url" | sed -E 's#^https?://([^/:?]+).*#\1#')"
-[[ "$url" == https://* ]] && [[ " $hosts " == *" $host "* ]] || { echo "em-api: host no permitido para $svc: $host" >&2; exit 2; }
+[[ "$url" == https://* ]] && ! authority_con_userinfo "$url" && [[ " $hosts " == *" $host "* ]] || { echo "em-api: host no permitido para $svc: $host" >&2; exit 2; }
 
 args=(-sS -X "$metodo" -w '\n%{http_code}')
 case "$(cfg .auth.tipo)" in
@@ -53,12 +55,12 @@ while [ $# -gt 0 ]; do
 done
 hdr="$(mktemp)"; trap 'rm -f "$hdr"' EXIT
 for salto in 1 2 3 4; do
-  resp="$(curl "${args[@]}" -D "$hdr" "$url" 2>&1)"
+  resp="$(curl --connect-timeout 10 --max-time "${EM_API_MAX_TIME:-120}" "${args[@]}" -D "$hdr" "$url" 2>&1)"
   code="${resp##*$'\n'}"; body="${resp%$'\n'*}"
   [[ "$code" =~ ^30[1278]$ ]] || break
   loc="$(grep -i '^location:' "$hdr" | tail -1 | sed -E 's/^[Ll]ocation:[[:space:]]*//' | tr -d '\r')"
   lhost="$(printf '%s' "$loc" | sed -E 's#^https?://([^/:?]+).*#\1#')"
-  if [[ "$loc" == https://* ]] && [[ " $hosts " == *" $lhost "* ]]; then url="$loc"; else
+  if [[ "$loc" == https://* ]] && ! authority_con_userinfo "$loc" && [[ " $hosts " == *" $lhost "* ]]; then url="$loc"; else
     echo "em-api: redirección a host no permitido ($lhost); no se sigue" >&2; code=599; body=""; break; fi
 done
 body="${body//"$token"/[REDACTED]}"
