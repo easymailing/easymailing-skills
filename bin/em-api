@@ -41,6 +41,7 @@ case "$(cfg .auth.tipo)" in
   query)  sep='?'; [[ "$url" == *\?* ]] && sep='&'; url="$url${sep}$(cfg .auth.nombre)=$token";;
   basic)  args+=(-u "$(resolver "$(cfg .auth.usuario)"):$token");;
 esac
+while IFS=$'\t' read -r k v; do [ -n "$k" ] && args+=(-H "$k: $v"); done < <(jq -r --arg s "$svc" '.[$s].cabeceras // {} | to_entries[] | "\(.key)\t\(.value)"' "$CONF")
 while [ $# -gt 0 ]; do
   case "$1" in
     --data) d="$2"; args+=(-H 'Content-Type: application/json'); if [[ "$d" == @* ]]; then args+=(--data-binary "$d"); else args+=(--data "$d"); fi; shift 2;;

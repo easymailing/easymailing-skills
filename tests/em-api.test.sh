@@ -73,4 +73,13 @@ rm -f "$T/curl.n"; printf 'eco oc-sent-[ab] fin\n500' > "$T/curl.resp"
 all=$( (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STORYBLOK_SPACE_ID=123 STORYBLOK_MANAGEMENT_TOKEN='oc-sent-[ab]'; "$REPO/bin/em-api" storyblok GET /stories 2>&1) )
 ! grep -qF 'oc-sent-[ab]' <<<"$all" && ok "11 redacción literal" || ko "11 redacción literal"
 rm -f "$T/curl.resp"
+# 12. cabeceras extra y formato Basic literal
+cat > "$T/serv.json" <<'J'
+{"kb":{"base_url":"https://api.openai.com/v1","hosts":["api.openai.com"],"auth":{"tipo":"header","nombre":"Authorization","formato":"Bearer {token}"},"cabeceras":{"OpenAI-Beta":"assistants=v2"},"secreto":{"item":"kb","campo":"credential","env":"KB_TOKEN"}},
+ "dfs":{"base_url":"https://api.dataforseo.com/v3","hosts":["api.dataforseo.com"],"auth":{"tipo":"header","nombre":"Authorization","formato":"Basic {token}"},"secreto":{"item":"dataforseo","campo":"credential","env":"DFS_TOKEN"}}}
+J
+rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv.json" KB_TOKEN=oc-sent-v2-kb; "$REPO/bin/em-api" kb GET /models >/dev/null)
+{ grep -qx 'OpenAI-Beta: assistants=v2' "$T/curl.args" && grep -qx 'Authorization: Bearer oc-sent-v2-kb' "$T/curl.args"; } && ok "12 cabeceras extra" || ko "12 cabeceras extra"
+rm -f "$T/curl.n"; (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SERVICIOS="$T/serv.json" DFS_TOKEN='oc-sent-v2-QUJDOg=='; "$REPO/bin/em-api" dfs GET /appendix/user_data >/dev/null)
+grep -qx 'Authorization: Basic oc-sent-v2-QUJDOg==' "$T/curl.args" && ok "13 Basic literal" || ko "13 Basic literal"
 echo "== $pass OK, $fail fallos"; rm -rf "$T"; [ $fail -eq 0 ]
