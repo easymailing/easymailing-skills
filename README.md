@@ -5,10 +5,10 @@ Colección de skills para Claude Code orientadas a la gestión y comunicación d
 ## Instalación
 
 ```bash
-npx skills install https://github.com/easymailing/easymailing-skills.git -g
+git clone git@github.com:easymailing/easymailing-skills.git && easymailing-skills/bin/install
 ```
 
-Instala todas las skills con prefijo `em-`.
+Enlaza las skills en Claude Code y Codex y añade `bin/` (`em-api`) al PATH. Reglas en [AGENTS.md](AGENTS.md).
 
 ## Actualización
 
@@ -20,12 +20,12 @@ npx skills install https://github.com/easymailing/easymailing-skills.git -g --fo
 
 | Skill | Para qué | Comando |
 |-------|----------|---------|
-| [em-capture-idea](capture-idea/) | Guardar material para después | `/em-capture-idea` |
-| [em-social-content](social-content/) | Posts para redes sociales | `/em-social-content` |
-| [em-marketing-content](marketing-content/) | Blog, integraciones, páginas web | `/em-marketing-content` |
-| [em-newsletter](newsletter/) | Emails a usuarios | `/em-newsletter` |
-| [em-kb-article](kb-article/) | Artículos de ayuda (Zendesk) | `/em-kb-article` |
-| [storyblok-content](storyblok-content/) | Páginas y contenido en Storyblok CMS | `/storyblok-content` |
+| [em-capture-idea](skills/capture-idea/) | Guardar material para después | `/em-capture-idea` |
+| [em-social-content](skills/social-content/) | Posts para redes sociales | `/em-social-content` |
+| [em-marketing-content](skills/marketing-content/) | Blog, integraciones, páginas web | `/em-marketing-content` |
+| [em-newsletter](skills/newsletter/) | Emails a usuarios | `/em-newsletter` |
+| [em-kb-article](skills/kb-article/) | Artículos de ayuda (Zendesk) | `/em-kb-article` |
+| [storyblok-content](skills/storyblok-content/) | Páginas y contenido en Storyblok CMS | `/storyblok-content` |
 
 > `em-release` se retiró de este repo: la versión canónica vive en `easymailingv2-docker/.claude/skills/em-release` (junto al código que releasea).
 

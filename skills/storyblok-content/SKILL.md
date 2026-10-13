@@ -1,149 +1,46 @@
 ---
 name: storyblok-content
-description: "Storyblok CMS — create and manage pages, blog articles, integrations, and any content type. Use when: creating pages, editing Storyblok content, publishing stories, managing assets, or building page layouts with components."
+description: "Storyblok CMS (web de easymailing.com) — crear y editar páginas, artículos de blog, integraciones, comparativas y landings; vista previa de borradores y publicación explícita. Usar al crear o editar contenido de la web, publicar o despublicar historias, subir assets o componer páginas con componentes."
 ---
 
-# Storyblok Content Management
+# Storyblok
 
-Skill para crear y gestionar contenido en el CMS de Storyblok. Usa mcporter para CRUD y md2rt para convertir markdown a richtext.
+CLI `sb` sobre la Management API, vía `em-api storyblok` (credencial sin exponer: cuenta de servicio de 1Password en el Mac, sentinel en OpenClaw). Sin MCP. `SKILL_DIR` = carpeta de esta skill. Space `310467`.
 
-## Setup
-
-### Requisitos
-
-- `mcporter` CLI con el MCP server de Storyblok configurado — si `which mcporter` falla, NO hay CRUD: instalarlo y configurarlo antes de continuar.
-- `op` (1Password CLI) con acceso al item `storyblok-cdn-token` (los scripts leen el token con `op read`).
-- `storyblok` CLI global (solo para `generate-types.sh`).
-
-Space ID: `310467`
-
-### Verificar conexion
+## Comandos
 
 ```bash
-mcporter call storyblok.search query="stories"
+SB="node $SKILL_DIR/scripts/sb.mjs"
+$SB buscar "segmentación" [--componente content-blog-article]
+$SB historia <id|full_slug>          # draft actual (Management API)
+$SB publicada <full_slug>            # versión publicada (CDN)
+$SB componentes                      # esquema de componentes
+$SB crear art.md --componente content-blog-article --campo content --nombre "Título" --slug mi-articulo --padre 573400902
+$SB crear story.json [--padre ID]    # payload {story:{...}}
+$SB actualizar <id|slug> story.json  # copia previa + PUT (borrador)
+$SB preview <id|slug>                # URL de vista previa firmada (caduca en 1 h)
+$SB publicar <id|slug>               # copia previa + publish
+$SB despublicar <id|slug>
+$SB borrar <id|slug>
+$SB assets subir hero.png --alt "Descripción"
 ```
 
-## CRUD via mcporter
-
-Todas las operaciones CRUD usan el MCP server de Storyblok via mcporter.
-
-### Buscar operaciones
-
-Siempre busca primero para obtener el operationId correcto:
-
-```bash
-mcporter call storyblok.search query="stories"
-mcporter call storyblok.search query="assets"
-mcporter call storyblok.search query="components"
-```
-
-### Leer (operaciones readOnly)
-
-```bash
-# Listar stories
-mcporter call storyblok.execute_readonly operation=listStories parameters='{"space_id": 310467}'
-
-# Filtrar por content type
-mcporter call storyblok.execute_readonly operation=listStories parameters='{"space_id": 310467, "contain_component": "content-blog-article"}'
-
-# Obtener story por ID
-mcporter call storyblok.execute_readonly operation=getStory parameters='{"space_id": 310467, "story_id": 12345}'
-
-# Listar componentes
-mcporter call storyblok.execute_readonly operation=listComponents parameters='{"space_id": 310467}'
-
-# Listar assets
-mcporter call storyblok.execute_readonly operation=listAssets parameters='{"space_id": 310467}'
-```
-
-### Crear y actualizar
-
-```bash
-# Crear story (siempre como draft)
-mcporter call storyblok.execute operation=createStory parameters='{"space_id": 310467, "story": {"name": "Mi articulo", "slug": "mi-articulo", "parent_id": 573400902, "content": {"component": "content-blog-article", "title": "...", "content": {...}}}}'
-
-# Actualizar story
-mcporter call storyblok.execute operation=updateStory parameters='{"space_id": 310467, "story_id": 12345, "story": {"content": {...}}}'
-
-# Publicar story
-mcporter call storyblok.execute operation=publishStory parameters='{"space_id": 310467, "story_id": 12345}'
-```
-
-### Subir assets
-
-```bash
-# Desde URL
-mcporter call storyblok.upload_asset space_id=310467 filename="hero.png" source="https://example.com/image.png" alt="Descripcion"
-
-# Desde archivo local
-mcporter call storyblok.upload_asset space_id=310467 filename="hero.png" source="/path/to/image.png" alt="Descripcion"
-```
-
-### Eliminar (operaciones destructive)
-
-```bash
-mcporter call storyblok.execute_destructive operation=deleteStory parameters='{"space_id": 310467, "story_id": 12345}'
-```
-
-## Preview de drafts en producción
-
-Para ver cómo se renderiza un story en draft (antes de publicar), usar el script `preview-url.sh` que genera la URL automáticamente con el token CDN global de 1Password:
-
-```bash
-./scripts/preview-url.sh blog/mi-articulo
-# Output: https://easymailing.com/blog/mi-articulo?preview_secret=xxxxx
-```
-
-### Ejemplos
-
-```bash
-./scripts/preview-url.sh blog/ia-util-vs-ia-cosmetica-email-marketing
-./scripts/preview-url.sh guides/automatizaciones
-./scripts/preview-url.sh integrations/shopify
-```
-
-### Cuándo usar
-
-- **Antes de crear `content_publish` approval**: verificar visualmente que el draft montado en Storyblok se renderiza correctamente en producción.
-- **Para screenshots de verificación**: pasar esta URL a la skill `screenshots` para capturar el estado del draft.
-- **Debugging de componentes**: comprobar que blok nodes (CTAs, expert-tips, FAQs, box-alerts) renderizan bien antes de publicar.
-
-### Importante
-
-- **NUNCA construir la URL de preview manualmente** ni usar el `preview_token` que devuelve la API de Storyblok en la respuesta de cada story. Ese token no es equivalente al `preview_secret` de la web pública. Usar siempre este script.
-- El token es el mismo CDN token que usa `cdn-get.sh` (almacenado en 1Password).
-- La URL de preview solo funciona si el story existe como draft en Storyblok (no tiene que estar publicado).
-- El `full_slug` es el que devuelve Storyblok (sin `/` inicial): `blog/mi-slug`, `guides/mi-slug`, etc.
-
-## Consultar version publicada (CDN API)
-
-El Management API (`getStoryById`) siempre devuelve la version **draft**. Para ver el JSON **publicado** (lo que ven los usuarios), usar el script `cdn-get.sh` que consulta el Content Delivery API:
-
-```bash
-# Version publicada
-./scripts/cdn-get.sh blog/mi-articulo
-
-# Version draft (para comparar)
-./scripts/cdn-get.sh blog/mi-articulo --draft
-```
-
-El slug es el `full_slug` del story (sin `/` inicial). El token CDN se lee de 1Password (`op://Easymailing/storyblok-cdn-token/credential`).
-
-**Cuando usar:**
-- Antes de actualizar un story: comparar published vs draft para saber que cambio
-- Para verificar que una publicacion se aplico correctamente
-- Para obtener el contenido publicado con todas las imagenes y componentes inline intactos
+- **Todo se crea y actualiza en borrador.** Publicar es una decisión del flujo: con Claude, solo cuando Sergio lo dice; en OpenClaw, tras su approval (`references/openclaw.md`).
+- **Copia previa**: `actualizar`, `publicar`, `despublicar` y `borrar` guardan el JSON anterior en `$STORYBLOK_BACKUP_DIR` (por defecto `~/.local/state/storyblok-backups`). Si la copia falla, no se escribe nada.
+- `actualizar` **reemplaza `story.content` entero**: parte siempre del contenido existente (ver «Actualizar stories existentes»).
+- La URL de `preview` contiene una firma temporal: dásela a Sergio para revisar, no la guardes en ficheros ni comentarios.
+- **OpenClaw**: capturas del draft con navegador aislado y reglas de approvals en [references/openclaw.md](references/openclaw.md).
 
 ## Conversion markdown → richtext
 
-El contenido de origen esta en markdown. Storyblok usa richtext (ProseMirror). Usa `md2rt.ts` para la conversion:
+El contenido en Mission Control esta en markdown. Storyblok usa richtext (ProseMirror). Usa `md2rt.ts` para la conversion:
 
 ```bash
 # Desde stdin
-echo "# Titulo\n\nTexto **bold**" | npx bun skills/storyblok-content/scripts/md2rt.ts
+echo "# Titulo\n\nTexto **bold**" | npx -y bun "$SKILL_DIR/scripts/md2rt.ts"
 
 # Desde archivo
-npx bun skills/storyblok-content/scripts/md2rt.ts --file /path/to/content.md
+npx -y bun "$SKILL_DIR/scripts/md2rt.ts" --file /path/to/content.md
 ```
 
 Output: `{ "success": true, "data": { "type": "doc", "content": [...] } }`
@@ -158,7 +55,7 @@ Output: `{ "success": true, "data": { "type": "doc", "content": [...] } }`
 
 ### Limitaciones de md2rt
 
-- **Componentes inline**: expert-tip, box-alert, content-accordeon (FAQs), PromoCard, call-to-action, content-image, etc. no se generan desde markdown. Se insertan manualmente como blok nodes en el JSON resultante. Ver `reference/composition-guide.md` seccion "Patrones de articulo" para donde colocarlos
+- **Componentes inline**: expert-tip, box-alert, content-accordeon (FAQs), PromoCard, call-to-action, content-image, etc. no se generan desde markdown. Se insertan manualmente como blok nodes en el JSON resultante. Ver `references/composition-guide.md` seccion "Patrones de articulo" para donde colocarlos
 
 ### Componentes inline en richtext (blok nodes)
 
@@ -218,7 +115,7 @@ Dentro de cualquier campo richtext (ej: `content` de un blog article) se pueden 
 
 ### Mapeo markdown → Storyblok
 
-El writer usa la sintaxis `<!-- BLOK -->` / `<!-- /BLOK -->` con campos nombrados. El publisher convierte esos campos a los campos reales de Storyblok:
+El writer usa la sintaxis `<!-- BLOK -->` / `<!-- /BLOK -->` con campos nombrados (ver skill `seo-workflow` → "Componentes inline"). El publisher convierte esos campos a los campos reales de Storyblok:
 
 | Componente | Campo markdown | Campo Storyblok | Notas |
 |---|---|---|---|
@@ -246,7 +143,7 @@ El writer usa la sintaxis `<!-- BLOK -->` / `<!-- /BLOK -->` con campos nombrado
 | `embed-video` | `url` | `url` | |
 | `integration-list` | `integraciones` | `items[]` | Buscar stories en `/integrations/` por nombre y referenciar |
 
-**Validacion obligatoria antes de montar:** Si un campo obligatorio esta vacio, no montar el componente. Reportar al writer.
+**Validacion obligatoria antes de montar:** Si un campo obligatorio (`*` en seo-workflow) esta vacio, no montar el componente. Reportar al writer.
 
 ## Content types
 
@@ -303,20 +200,20 @@ El schema JSON-LD se genera automaticamente — NO incluirlo manualmente.
 
 Protocolo obligatorio:
 
-1. Leer el story publicado con `cdn-get.sh` antes de hacer nada
+1. Leer el story publicado antes de hacer nada (`sb publicada <slug>`)
 2. Usar el content existente como base
 3. Solo reemplazar los campos que tienen valores nuevos
 4. Para richtext: extraer blok nodes existentes, reemplazar nodos de texto, reinsertar blok nodes
 
-Ver `reference/composition-guide.md` seccion "Actualizar un articulo existente" para el protocolo completo con pseudocodigo.
+Ver `references/composition-guide.md` seccion "Actualizar un articulo existente" para el protocolo completo con pseudocodigo.
 
 ## Refreshes: checklist operativa
 
-Cuando la tarea es un refresh de un contenido ya publicado (actualizar una pagina existente), el story ya existe. La regla central: **published = base, briefing = delta, todo lo no mencionado se preserva**.
+Cuando una tarea de CMS es un refresh (el content tiene `workType: "refresh"` en customData), el story ya existe publicado. La regla central: **published = base, briefing = delta, todo lo no mencionado se preserva**.
 
 ### Paso a paso
 
-1. **Backup**: GET story published (`cdn-get.sh {slug}`) → guardar backup local del JSON completo (p.ej. `backup-pre-refresh-{YYYY-MM-DD}.json` junto al material de trabajo).
+1. **Backup**: `sb actualizar` guarda ya una copia previa del draft; además guarda la versión publicada (`sb publicada {slug}`) junto al material de la tarea (en OpenClaw: `vault://contenidos/{tipo}/{slug}/backup-pre-refresh-{YYYY-MM-DD}.json`).
 2. **Leer briefing**: leer el campo `briefing` del content o `variants[0].body` si no hay briefing separado → listar explicitamente que campos y secciones cambian.
 3. **Aplicar delta**: usar el story published como base. Aplicar SOLO los cambios del briefing sobre el content existente. No crear story nuevo. No reemplazar el body completo salvo que el briefing lo pida explicitamente.
 4. **Verificar preservacion**: confirmar que siguen intactos todos los elementos no mencionados en el delta:
@@ -324,7 +221,7 @@ Cuando la tarea es un refresh de un contenido ya publicado (actualizar una pagin
    - Bloques CMS: `expert-tip`, `box-alert`, `content-accordeon`, `check-list`, `integration-list`, `embed-video`
    - CTAs: `call-to-action`, `call-to-action-image`
    - Tablas, listas, estructura general del richtext
-5. **Comparar draft vs published**: antes de enviar approval, revisar que la unica diferencia entre el draft y la version published son los cambios que el briefing pedia. Si hay diferencias no justificadas, corregir.
+5. **Comparar draft vs published**: antes de pedir la publicación, revisar que la unica diferencia entre el draft y la version published son los cambios que el briefing pedia. Si hay diferencias no justificadas, corregir.
 
 ### Errores frecuentes a evitar
 
@@ -349,11 +246,11 @@ Cuando la tarea es un refresh de un contenido ya publicado (actualizar una pagin
 
 | Archivo | Contenido |
 |---------|-----------|
-| `reference/storyblok.d.ts` | Tipos TypeScript — campos exactos de cada componente |
-| `reference/composition-guide.md` | Composicion de paginas, patrones de articulo, formato richtext, blok nodes, protocolo de actualizacion |
-| `reference/interlinking.md` | Estructura de URLs del site, enlaces internos en richtext, patrones de enlazado, cuantos links por articulo |
+| `references/storyblok.d.ts` | Tipos TypeScript — campos exactos de cada componente |
+| `references/composition-guide.md` | Composicion de paginas, patrones de articulo, formato richtext, blok nodes, protocolo de actualizacion |
+| `references/interlinking.md` | Estructura de URLs del site, enlaces internos en richtext, patrones de enlazado, cuantos links por articulo |
 
 Para regenerar los tipos tras cambios en Storyblok:
 ```bash
-./generate-types.sh
+"$SKILL_DIR/generate-types.sh"
 ```

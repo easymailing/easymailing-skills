@@ -6,7 +6,7 @@
 
 SPACE_ID=310467
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-OUTPUT_PATH="$SCRIPT_DIR/reference/storyblok.d.ts"
+OUTPUT_PATH="$SCRIPT_DIR/references/storyblok.d.ts"
 TEMP_JSON="$SCRIPT_DIR/components.$SPACE_ID.json"
 
 # Descargar componentes

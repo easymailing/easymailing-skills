@@ -1,14 +1,6 @@
-#!/bin/bash
-# Genera la URL de preview de un story en draft
-# Usage: ./preview-url.sh <full_slug>
-# Output: https://easymailing.com/<full_slug>?preview_secret=<TOKEN>
-#
-# Ejemplos:
-#   ./preview-url.sh blog/mi-articulo
-#   ./preview-url.sh guides/automatizaciones
-
+#!/usr/bin/env bash
+# Generates the official, short-lived Visual Editor link, never the CDN credential.
 set -euo pipefail
-
-SLUG="${1:?Usage: preview-url.sh <full_slug>}"
-TOKEN=$(op read "op://Easymailing/storyblok-cdn-token/credential")
-echo "https://easymailing.com/${SLUG}?preview_secret=${TOKEN}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../openclaw-protected-auth/require-secret.sh"
+require_openclaw_secret STORYBLOK_MANAGEMENT_TOKEN
+python3 "$(dirname "${BASH_SOURCE[0]}")/preview-url.py" "${1:?Usage: preview-url.sh <full_slug>}"
