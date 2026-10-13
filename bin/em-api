@@ -23,19 +23,21 @@ resolver() { # sustituye {var} usando vars: env > valor > item/campo
     local e val; e="$(cfg ".vars.$v.env")"; val="${e:+${!e:-}}"
     [ -n "$val" ] || val="$(cfg ".vars.$v.valor")"
     [ -n "$val" ] || { local it ca; it="$(cfg ".vars.$v.item")"; ca="$(cfg ".vars.$v.campo")"; [ -n "$it" ] && val="$("$REPO/bin/em-secret" "$it" "$ca")"; }
+    [[ "$val" =~ ^[A-Za-z0-9._@-]+$ ]] || { echo "em-api: valor no válido para {$v}" >&2; exit 2; }
     s="${s//\{$v\}/$val}"
   done
   printf '%s' "$s"
 }
-base="$(resolver "$(cfg .base_url)")"
-hosts="$(resolver "$(jq -r --arg s "$svc" '.[$s].hosts | join(" ")' "$CONF")")"
+base="$(resolver "$(cfg .base_url)")" || exit 2
+hosts="$(resolver "$(jq -r --arg s "$svc" '.[$s].hosts | join(" ")' "$CONF")")" || exit 2
+for h in $hosts; do [[ "$h" =~ ^[a-z0-9.-]+$ ]] || { echo "em-api: host no válido en la configuración: $h" >&2; exit 2; }; done
 if [[ "$ruta" == http* ]]; then url="$ruta"; else url="$base$ruta"; fi
 host="$(printf '%s' "$url" | sed -E 's#^https?://([^/:?]+).*#\1#')"
 [[ "$url" == https://* ]] && [[ " $hosts " == *" $host "* ]] || { echo "em-api: host no permitido para $svc: $host" >&2; exit 2; }
 
 args=(-sS -X "$metodo" -w '\n%{http_code}')
 case "$(cfg .auth.tipo)" in
-  header) args+=(-H "$(cfg .auth.nombre): $(cfg .auth.formato | sed "s#{token}#$token#")");;
+  header) fmt="$(cfg .auth.formato)"; args+=(-H "$(cfg .auth.nombre): ${fmt//\{token\}/$token}");;
   query)  sep='?'; [[ "$url" == *\?* ]] && sep='&'; url="$url${sep}$(cfg .auth.nombre)=$token";;
   basic)  args+=(-u "$(resolver "$(cfg .auth.usuario)"):$token");;
 esac
@@ -57,6 +59,6 @@ for salto in 1 2 3 4; do
   if [[ "$loc" == https://* ]] && [[ " $hosts " == *" $lhost "* ]]; then url="$loc"; else
     echo "em-api: redirección a host no permitido ($lhost); no se sigue" >&2; code=599; body=""; break; fi
 done
-body="${body//$token/[REDACTED]}"
+body="${body//"$token"/[REDACTED]}"
 if [[ "$code" =~ ^2 ]]; then printf '%s\n' "$body"; exit 0; fi
 printf 'em-api: HTTP %s\n%s\n' "$code" "$body" >&2; exit 1

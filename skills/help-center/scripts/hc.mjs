@@ -54,6 +54,9 @@ const relDe = (file, locale) => relative(join(REPO, "articulos", locale), file).
 const parDe = (file, de, a) => join(REPO, "articulos", a, relDe(file, de));
 const seccionesValidas = () => cfg.categorias.flatMap((c) => c.secciones.map((s) => `${c.clave}/${s.clave}`));
 const imagenesDe = (file, body) => [...body.matchAll(/!\[[^\]]*\]\(([^)\s]+)\)/g)].map((m) => ({ ref: m[1], path: resolve(dirname(file), m[1]) }));
+const claveImg = (p) => (existsSync(p) ? `${p}#${sha(readFileSync(p))}` : p);
+// hash para traduccion_de: el original sin las líneas que escribe hc (zendesk_id)
+const hashOrigen = (f) => sha(readFileSync(f, "utf8").replace(/^zendesk_id:.*\n/m, ""));
 
 // ---------- API ----------
 function api(metodo, ruta, data, form) {
@@ -74,7 +77,7 @@ async function render(file, body, locale, adjuntos) {
   }
   let html = md.render(body.replace(/^#\s+.*\n+/, ""));
   for (const img of imagenesDe(file, body)) {
-    const url = adjuntos[img.path];
+    const url = adjuntos[claveImg(img.path)];
     html = html.split(`src="${img.ref}"`).join(url ? `src="${url}"` : `src="" data-pendiente="${img.ref}"`);
   }
   html = html.replace(/<blockquote>\s*<p>\[!(INFO|AVISO)\]\s*([\s\S]*?)<\/p>\s*<\/blockquote>/g,
@@ -141,9 +144,10 @@ async function sync() {
     // imágenes pendientes → adjuntos del artículo
     let subidas = false;
     for (const img of p.imgs) {
-      if (adjuntos[img.path] || !existsSync(img.path)) continue;
+      if (adjuntos[claveImg(img.path)] || !existsSync(img.path)) continue;
       const r = apiOk("POST", `/help_center/articles/${id}/attachments.json`, undefined, `file=@${img.path}`);
-      adjuntos[img.path] = r.article_attachment.content_url; subidas = true;
+      adjuntos[claveImg(img.path)] = r.article_attachment.content_url; subidas = true;
+      writeFileSync(estPath, JSON.stringify(estado, null, 2) + "\n"); // persistir ya: evita duplicados si algo falla después
     }
     const existentes = new Set((apiOk("GET", `/help_center/articles/${id}/translations.json`).translations || []).map((t) => t.locale.toLowerCase()));
     for (const [l, v] of Object.entries(p.loc)) {
@@ -210,11 +214,11 @@ switch (cmd) {
     for (const f of articulos(cfg.locale_origen || "es")) { const p = parse(f).fm.pantallas || []; if ([].concat(p).some((x) => ruta === x || ruta.startsWith(x + "/"))) process.stdout.write(relDe(f, cfg.locale_origen || "es") + "\n"); }
     break;
   }
-  case "hash": process.stdout.write(sha(readFileSync(resolve(args[0] || fallo("uso: hc hash <fichero>")), "utf8")) + "\n"); break;
+  case "hash": process.stdout.write(hashOrigen(resolve(args[0] || fallo("uso: hc hash <fichero>"))) + "\n"); break;
   case "traducciones": {
     const origen = cfg.locale_origen || "es";
     for (const f of articulos(origen)) {
-      const h = sha(readFileSync(f, "utf8"));
+      const h = hashOrigen(f);
       for (const l of cfg.locales.filter((x) => x !== origen)) {
         const p = parDe(f, origen, l);
         if (!existsSync(p)) process.stdout.write(`sin ${l}: ${relDe(f, origen)}\n`);

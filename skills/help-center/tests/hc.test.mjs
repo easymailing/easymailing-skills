@@ -118,3 +118,21 @@ test("11 locales_zendesk: la carpeta en se publica como en-us", () => {
   const tr = r.escrituras().find((c) => /translations\.json$/.test(c.ruta) && c.metodo === "POST");
   assert.equal(tr.data.translation.locale, "en-us");
 });
+
+test("12 si cambia el contenido de una imagen se vuelve a subir", () => {
+  const r = repo(); mkdirSync(join(r.d, "imagenes", "s"), { recursive: true });
+  const img = join(r.d, "imagenes", "s", "p.png"); writeFileSync(img, "V1");
+  r.art("es", "crear-segmento", fmBase, "![P](../../../../imagenes/s/p.png)");
+  r.run("sync"); writeFileSync(img, "V2");
+  const out = r.run("sync"); assert.equal(out.status, 0, out.stderr);
+  assert.equal(r.escrituras().filter((c) => /attachments/.test(c.ruta)).length, 2);
+});
+
+test("13 tras sync (que añade zendesk_id) la traducción no aparece desfasada", () => {
+  const r = repo(); const es = r.art("es", "crear-segmento", fmBase, "# Hola");
+  const h = r.run("hash", es).stdout.trim();
+  r.art("en", "crear-segmento", { titulo: "Create", seccion: "contactos/segmentos", estado: "borrador", traduccion_de: h }, "# Hi");
+  r.run("sync");
+  const out = r.run("traducciones"); assert.equal(out.status, 0);
+  assert.doesNotMatch(out.stdout, /desfasada/);
+});
