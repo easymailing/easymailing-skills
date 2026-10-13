@@ -20,4 +20,4 @@ Skills comunes de Easymailing para cualquier IA (Claude Code, Codex, agentes Ope
 
 ## Tests
 
-`bash tests/*.test.sh` y `node --test skills/*/tests/` .
+`for t in tests/*.test.sh; do bash $t; done` y `node --test skills/*/tests/*.test.mjs`.
