@@ -24,8 +24,9 @@ npx skills install https://github.com/easymailing/easymailing-skills.git -g --fo
 | [em-social-content](skills/social-content/) | Posts para redes sociales | `/em-social-content` |
 | [em-marketing-content](skills/marketing-content/) | Blog, integraciones, páginas web | `/em-marketing-content` |
 | [em-newsletter](skills/newsletter/) | Emails a usuarios | `/em-newsletter` |
-| [em-kb-article](skills/kb-article/) | Artículos de ayuda (Zendesk) | `/em-kb-article` |
-| [storyblok-content](skills/storyblok-content/) | Páginas y contenido en Storyblok CMS | `/storyblok-content` |
+| [em-kb-article](skills/kb-article/) | Método para redactar artículos de ayuda (repo help-center) | `/em-kb-article` |
+| [storyblok-content](skills/storyblok-content/) | Páginas y contenido en Storyblok CMS (CLI `sb`) | `/storyblok-content` |
+| [em-help-center](skills/help-center/) | Help Center nuevo de la Customer App (Zendesk, CLI `hc`) | `/em-help-center` |
 
 > `em-release` se retiró de este repo: la versión canónica vive en `easymailingv2-docker/.claude/skills/em-release` (junto al código que releasea).
 

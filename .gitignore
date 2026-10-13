@@ -15,3 +15,6 @@
 
 # Secrets
 **/.env
+
+# Dependencias
+node_modules/

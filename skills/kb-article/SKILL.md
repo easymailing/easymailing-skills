@@ -7,80 +7,11 @@ description: Use when creating knowledge base articles for Easymailing. Also use
 
 Crea artículos de base de conocimiento para Easymailing, consultando código, navegando la app cuando sea necesario, y publicando como borrador en Zendesk.
 
-## Configuración requerida
+## Dónde se escribe y cómo se publica
 
-### Archivo de configuración
-
-Verifica que existe `.kb-config.json` en la carpeta de esta skill. Si no existe, pregunta:
-
-1. "¿Cuál es la ruta del proyecto Easymailing?"
-2. "¿Cuál es la ruta del vault de Obsidian?"
-3. "¿Cuál es tu email de Zendesk?"
-
-Crea el archivo con esta estructura:
-
-```json
-{
-  "project_path": "{ruta al proyecto}",
-  "obsidian_vault_path": "{ruta al vault}",
-  "zendesk_subdomain": "easymailing",
-  "zendesk_email": "{email del usuario}",
-  "test_app": {
-    "url": "http://dfutura.easymailing.test",
-    "user": "jhon@acme.com"
-  }
-}
-```
-
-Y recuerda al usuario:
-
-```
-Configuración guardada en .kb-config.json
-
-Recuerda configurar las variables de entorno:
-- ZENDESK_API_TOKEN: tu token de API de Zendesk
-- EASYMAILING_TEST_PASSWORD: password del usuario de test
-```
-
-### Variables de entorno
-
-El archivo `.env` en la carpeta de la skill debe contener:
-```
-ZENDESK_API_TOKEN=tu_token_de_zendesk
-EASYMAILING_TEST_PASSWORD=password_del_usuario_test
-```
-
-## Script de Zendesk
-
-La skill incluye un script CLI para interactuar con la API de Zendesk:
-
-```bash
-# Listar categorías
-npx bun kb-article/scripts/zendesk.ts categories
-
-# Listar secciones de una categoría
-npx bun kb-article/scripts/zendesk.ts sections <category_id>
-
-# Buscar artículos
-npx bun kb-article/scripts/zendesk.ts search "término de búsqueda"
-
-# Obtener un artículo (para análisis de estilo)
-npx bun kb-article/scripts/zendesk.ts article <article_id>
-
-# Obtener traducciones de un artículo
-npx bun kb-article/scripts/zendesk.ts translations <article_id>
-
-# Guardar backup antes de modificar un artículo publicado
-npx bun kb-article/scripts/zendesk.ts backup <article_id> --out "{project_path}/docs/kb-workspace/v1.27/backups"
-
-# Crear artículo como borrador
-npx bun kb-article/scripts/zendesk.ts create <section_id> --title "Título" --body "<html>" --locale es --draft
-
-# Añadir traducción
-npx bun kb-article/scripts/zendesk.ts translate <article_id> --title "Title" --body "<html>" --locale en
-```
-
-El script lee automáticamente `.kb-config.json` y `.env` de la carpeta de la skill.
+- **Help Center nuevo (Customer App):** los artículos se escriben en el repo `help-center` (`producto/help-center/`), siguiendo su `AGENTS.md`, y se sincronizan con la skill `em-help-center` (`hc`). Esta skill aporta el método de investigación, preguntas y redacción.
+- **Help Center actual:** no se edita desde aquí.
+- **App de test** para explorar pantallas y capturar: `https://acme.easymailing.test` (usuario y contraseña en el item `easymailing-test-app` del vault de agentes; los usa el script de capturas, nunca se escriben en el chat).
 
 ## Flujo principal
 
@@ -118,37 +49,12 @@ Pregunta abierta:
 
 > "¿Sobre qué funcionalidad o tema quieres crear el artículo?"
 
-### Paso 1.3: Consultar Zendesk
+### Paso 1.3: Consultar lo que ya existe
 
-Usa el script de Zendesk para obtener contexto:
-
-1. **Listar categorías y secciones**:
-   ```bash
-   npx bun kb-article/scripts/zendesk.ts categories
-   npx bun kb-article/scripts/zendesk.ts sections <category_id>
-   ```
-   Presenta las opciones al usuario para elegir dónde ubicar el artículo.
-
-2. **Buscar artículos relacionados**:
-   ```bash
-   npx bun kb-article/scripts/zendesk.ts search "{tema}"
-   ```
-   Si encuentra artículos similares:
-   - Informa al usuario para evitar duplicados
-   - Sugiere posibles enlaces cruzados
-
-3. **Leer 2-3 artículos existentes** (para análisis de estilo):
-   ```bash
-   npx bun kb-article/scripts/zendesk.ts article <article_id>
-   ```
-   Analiza el estilo y formato para mantener consistencia.
-
-4. **Backup obligatorio antes de modificar artículos publicados**:
-   Si el artículo ya existe en Zendesk y se va a modificar, descarga un backup antes de redactar o actualizar contenido:
-   ```bash
-   npx bun kb-article/scripts/zendesk.ts backup <article_id> --out "{project_path}/docs/kb-workspace/v1.27/backups"
-   ```
-   Registra en el Evidence Pack las rutas del JSON y Markdown generados. No actualizar Zendesk si no existe backup.
+1. **Estructura del Help Center nuevo**: `cat zendesk.json` en el repo `help-center` → propone la sección donde ubicar el artículo.
+2. **Artículos relacionados en el repo**: `grep -ril "{tema}" articulos/es` y `node $HC_SKILL/scripts/hc.mjs afectados <ruta-de-la-pantalla>` → evita duplicados y sugiere enlaces cruzados.
+3. **Help Center actual** (solo lectura, para estilo y contenido previo): `em-api zendesk GET "/help_center/articles/search.json?query={tema}"` y `em-api zendesk GET /help_center/articles/<id>.json`.
+4. Si el artículo ya existe en el repo, **actualízalo** en vez de crear otro (Git guarda el historial).
 
 ## Fase 2: Investigación
 
@@ -172,10 +78,8 @@ Si crees que necesitas ver la UI para entender mejor, pregunta:
 
 Si el usuario confirma:
 
-1. Usa Chrome para abrir `{test_app.url}` de la config
-2. Haz login:
-   - Usuario: `{test_app.user}` de la config
-   - Password: valor de `EASYMAILING_TEST_PASSWORD`
+1. Abre `https://acme.easymailing.test` (app de test) en el navegador
+2. Haz login con el usuario de la app de test (credenciales en el item `easymailing-test-app`; si el navegador necesita la contraseña, pídesela a Sergio que la introduzca él o usa su gestor de contraseñas: nunca la escribas tú en el chat)
 3. Navega a la sección relevante
 4. Explora la funcionalidad (solo lectura, no modificar datos)
 5. Reporta lo observado
@@ -258,167 +162,16 @@ Muestra el Markdown y pregunta: "¿La versión en inglés está bien?"
 
 Itera hasta que el usuario apruebe.
 
-### Paso 5.3: Generar HTML final
+### Paso 5.3: Guardar en el repo
 
-Una vez aprobados ambos idiomas, convierte el Markdown a HTML usando los componentes de Zendesk:
+- Español: `articulos/es/<categoria>/<seccion>/<slug>.md` con el frontmatter de `help-center/AGENTS.md` (`estado: borrador`, `pantallas` con las rutas de la app).
+- Inglés: mismo camino en `articulos/en/`, con `traduccion_de` = `hc hash` del español.
+- Capturas en `imagenes/<slug>/`. Notas con `> [!INFO]` / `> [!AVISO]`. No hace falta generar HTML: lo hace `hc`.
 
-**Alertas** (información importante):
-```html
-<div class="alert alert-info">
-  Texto informativo o tip
-</div>
+## Fase 6: Sincronizar con Zendesk
 
-<div class="alert alert-warning">
-  Advertencia o precaución
-</div>
-```
-
-**Pasos numerados**:
-```html
-<p>
-  <span class="number">1</span> Descripción del paso
-</p>
-<p>
-  <span class="number">2</span> Siguiente paso
-</p>
-```
-
-**Índice de contenidos** (artículos largos):
-```html
-<div class="content-index">
-  <p>Índice de contenidos</p>
-  <p><a href="#seccion1">1. Primera sección</a></p>
-  <p><a href="#seccion2">2. Segunda sección</a></p>
-</div>
-
-<h2 id="seccion1">Primera sección</h2>
-```
-
-**Tablas**:
-```html
-<table>
-  <tbody>
-    <tr>
-      <td class="gray"><strong>Destacado</strong></td>
-      <td>Contenido normal</td>
-    </tr>
-  </tbody>
-</table>
-```
-
-**Placeholders de imágenes**:
-```html
-<p>(IMAGEN PENDIENTE: Descripción detallada de qué mostrar)</p>
-```
-
-El HTML se genera automáticamente sin mostrar al usuario (ya aprobó el contenido en Markdown).
-
-## Fase 6: Publicación
-
-### Paso 6.1: Guardar en Obsidian
-
-Crea la carpeta y archivos:
-
-```
-{obsidian_vault_path}/Areas/Easymailing/Knowledge-Base/{YYYY-MM-DD}-{slug}/
-├── article-brief.md
-├── article-es.md
-├── article-en.md
-└── images.md
-```
-
-**article-brief.md**:
-```markdown
-# {Título del artículo}
-
-## Metadata
-- Fecha: {YYYY-MM-DD}
-- Categoría Zendesk: {categoría elegida}
-- Sección Zendesk: {sección elegida}
-- Origen: {soporte/feature nueva/faltaba documentación}
-
-## Resumen
-{Breve descripción de qué explica el artículo}
-
-## Artículos relacionados
-- {links a artículos existentes si los hay}
-
-## Zendesk
-- Borrador ES: {URL después de publicar}
-- Borrador EN: {URL después de publicar}
-```
-
-**article-es.md** (HTML en bloque de código):
-```markdown
-# {Título en español}
-
-## HTML
-
-\`\`\`html
-{HTML del artículo en español}
-\`\`\`
-```
-
-**article-en.md** (HTML en bloque de código):
-```markdown
-# {Título en inglés}
-
-## HTML
-
-\`\`\`html
-{HTML del artículo en inglés}
-\`\`\`
-```
-
-**images.md**:
-```markdown
-# Imágenes requeridas
-
-## 1. {nombre-descriptivo}.png
-- **Ubicación en HTML:** Sección "{nombre}"
-- **Qué mostrar:** {descripción detallada}
-- **Notas:** {indicaciones especiales si las hay}
-
-## 2. {nombre-descriptivo}.png
-...
-```
-
-### Paso 6.2: Publicar borrador en Zendesk
-
-1. **Crear artículo en español**:
-   ```bash
-   npx bun kb-article/scripts/zendesk.ts create {section_id} --title "{título}" --body "{HTML español}" --locale es --draft
-   ```
-   El comando devuelve el `article_id` y la URL del borrador.
-
-2. **Añadir traducción en inglés**:
-   ```bash
-   npx bun kb-article/scripts/zendesk.ts translate {article_id} --title "{título en inglés}" --body "{HTML inglés}" --locale en
-   ```
-
-3. **Actualizar article-brief.md** con las URLs de los borradores
-
-4. **Confirmar al usuario**:
-   ```
-   Artículo publicado como borrador en Zendesk:
-   - Español: {URL}
-   - Inglés: {URL}
-
-   Archivos guardados en:
-   {ruta en Obsidian}
-
-   Recuerda añadir las imágenes listadas en images.md antes de publicar.
-   ```
-
-## Rutas del proyecto
-
-Leer de `.kb-config.json`:
-- **Proyecto Easymailing**: `project_path`
-- **Vault Obsidian**: `obsidian_vault_path`
-- **App de test**: `test_app.url`
-
-## Invocación
-
-```bash
-/kb-article
-```
+1. `hc check` (corrige lo que señale).
+2. `hc sync --dry-run` → enseña el plan a Sergio.
+3. `hc sync` → crea el borrador en la marca nueva y guarda `zendesk_id`.
+4. Haz commit en el repo `help-center` (un commit por artículo o tanda).
+5. **Publicar** (`estado: publicado` + `hc sync`) solo cuando Sergio lo diga.
