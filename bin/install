@@ -1,0 +1,26 @@
+#!/bin/bash
+# Instala las skills del repo para Claude Code y Codex, y añade bin/ al PATH.
+# Enlaza ~/.agents/skills/<name> -> skills/<dir> (name = campo `name` del SKILL.md) y,
+# si existen ~/.claude/skills o ~/.codex/skills, enlaza allí ../../.agents/skills/<name>.
+# Idempotente. Uso: bin/install
+set -eu
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+mkdir -p "$HOME/.agents/skills"
+for skill in "$REPO"/skills/*/SKILL.md; do
+  dir="$(dirname "$skill")"
+  name="$(awk '/^name:/{sub(/^name:[ ]*/,""); gsub(/"/,""); print; exit}' "$skill")"
+  [ -n "$name" ] || { echo "AVISO sin name: $skill"; continue; }
+  dest="$HOME/.agents/skills/$name"
+  if [ "$(readlink "$dest" 2>/dev/null)" != "$dir" ]; then
+    [ -e "$dest" ] && [ ! -L "$dest" ] && { echo "AVISO $dest existe y no es enlace; se deja"; continue; }
+    ln -sfn "$dir" "$dest"; echo "enlazado $name -> $dir"
+  fi
+  for tool in .claude .codex; do
+    t="$HOME/$tool/skills"
+    [ -d "$t" ] || continue
+    [ -e "$t/$name" ] || [ -L "$t/$name" ] || { ln -s "../../.agents/skills/$name" "$t/$name"; echo "enlazado $tool/$name"; }
+  done
+done
+line="export PATH=\"$REPO/bin:\$PATH\"  # easymailing-skills (bin/install)"
+touch "$HOME/.zshrc"
+grep -qF "$REPO/bin" "$HOME/.zshrc" || { echo "$line" >> "$HOME/.zshrc"; echo "PATH añadido a ~/.zshrc"; }
