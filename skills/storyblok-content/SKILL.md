@@ -29,7 +29,7 @@ $SB assets subir hero.png --alt "Descripción"
 - **Copia previa**: `actualizar`, `publicar`, `despublicar` y `borrar` guardan el JSON anterior en `$STORYBLOK_BACKUP_DIR` (por defecto `~/.local/state/storyblok-backups`). Si la copia falla, no se escribe nada.
 - `actualizar` **reemplaza `story.content` entero**: parte siempre del contenido existente (ver «Actualizar stories existentes»).
 - La URL de `preview` contiene una firma temporal: dásela a Sergio para revisar, no la guardes en ficheros ni comentarios.
-- **OpenClaw**: capturas del draft con navegador aislado y reglas de approvals en [references/openclaw.md](references/openclaw.md).
+- **OpenClaw**: ejecuta siempre `sb` mediante `gateway_exec` (es lo que hereda el sentinel y el proxy protegido; con exec normal falla por falta de credencial). Capturas del draft y approvals en [references/openclaw.md](references/openclaw.md).
 
 ## Conversion markdown → richtext
 

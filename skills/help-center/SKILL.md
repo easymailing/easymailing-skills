@@ -22,3 +22,4 @@ $HC sync                       # aplica: crea/actualiza, sube imágenes, escribe
 - **Publicar** = cambiar `estado: publicado` en el frontmatter y `hc sync`. Hazlo solo cuando Sergio lo diga.
 - Ejecuta siempre `hc sync --dry-run` y enseña el plan antes del primer `sync` de una sesión.
 - Dependencias: `npm install` en esta carpeta (lo hace `bin/install`).
+- **OpenClaw**: ejecuta `hc` mediante `gateway_exec` (hereda el sentinel de `ZENDESK_API_TOKEN`).
