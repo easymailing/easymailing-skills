@@ -56,6 +56,23 @@ test("4 responder exige --confirmado y no escribe sin él", () => {
   assert.equal(e.calls().filter((c) => c.args[1] === "PUT").length, 0);
 });
 
+test("6 borrador deja una nota interna marcada y nunca pública", () => {
+  const e = entorno({ "PUT /tickets/7.json": { ticket: { id: 7 } } });
+  const r = e.run("borrador", "7", "--texto", "Hola, ya está corregido.", "--confirmado");
+  assert.equal(r.status, 0, r.stderr);
+  const comment = JSON.parse(e.calls().find((c) => c.args[1] === "PUT").data).ticket.comment;
+  assert.equal(comment.public, false);
+  assert.match(comment.body, /^BORRADOR DE RESPUESTA — no enviado al cliente\./);
+  assert.match(comment.body, /Hola, ya está corregido\.$/);
+});
+
+test("7 borrador exige --confirmado y rechaza --publico", () => {
+  const e = entorno({});
+  assert.notEqual(e.run("borrador", "7", "--texto", "x").status, 0);
+  assert.notEqual(e.run("borrador", "7", "--texto", "x", "--publico", "--confirmado").status, 0);
+  assert.equal(e.calls().filter((c) => c.args[1] === "PUT").length, 0);
+});
+
 test("5 responder interno con --confirmado hace PUT con public false", () => {
   const e = entorno({ "PUT /tickets/7.json": { ticket: { id: 7 } } });
   const r = e.run("responder", "7", "--interno", "--texto", "nota", "--confirmado");

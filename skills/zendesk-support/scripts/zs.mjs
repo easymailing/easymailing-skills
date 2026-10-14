@@ -64,7 +64,17 @@ switch (cmd) {
     imprimir({ id: Number(id), comentario: o.publico ? "público" : "interno" });
     break;
   }
+  case "borrador": {
+    // La API de Zendesk no expone borradores de respuesta: se deja una nota interna, nunca
+    // pública, marcada como borrador para revisarla y enviarla a mano desde Zendesk.
+    const id = pos[0]; if (!id || !o.texto || o.publico) fallo('uso: zs borrador <id> --texto "..." --confirmado (siempre interno)');
+    if (!o.confirmado) fallo("borrador escribe una nota interna en Zendesk: añade --confirmado solo si Sergio lo ha pedido");
+    const cuerpo = `BORRADOR DE RESPUESTA — no enviado al cliente.\nRevisar y enviar como respuesta pública desde Zendesk.\n\n---\n\n${o.texto}`;
+    api("PUT", `/tickets/${id}.json`, { ticket: { comment: { body: cuerpo, public: false } } });
+    imprimir({ id: Number(id), comentario: "interno", borrador: true });
+    break;
+  }
   default:
-    process.stderr.write('uso: zs <tickets [--estado abiertos|pendientes|nuevos|espera|resueltos] [--desde AAAA-MM-DD] [--max N] | ticket <id> | buscar "<texto>" | metricas | responder <id> --interno|--publico --texto "..." --confirmado>\n');
+    process.stderr.write('uso: zs <tickets [--estado abiertos|pendientes|nuevos|espera|resueltos] [--desde AAAA-MM-DD] [--max N] | ticket <id> | buscar "<texto>" | metricas | responder <id> --interno|--publico --texto "..." --confirmado | borrador <id> --texto "..." --confirmado>\n');
     process.exit(cmd ? 2 : 0);
 }
