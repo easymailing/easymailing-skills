@@ -1,6 +1,6 @@
 ---
 name: em-sentry
-description: "Errores de producción de Easymailing en Sentry, en los proyectos easymailing (backend) y customer-app (nueva aplicación): incidencias abiertas, detalle con el stacktrace del último evento, eventos resumen de las últimas 24 h y marcar incidencias como resueltas (con confirmación). Usar cuando pregunten «¿hay errores en producción?», «¿qué está fallando?», «mira este error de Sentry», «¿cuántos usuarios afecta?», tras un despliegue, o antes de depurar un bug reportado."
+description: "Errores de producción de Easymailing en Sentry, en los proyectos easymailing (backend) y customer-app (nueva aplicación): incidencias abiertas, detalle con el stacktrace del último evento, eventos, resumen de las últimas 24 h y marcar incidencias como resueltas (con confirmación). Usar cuando pregunten «¿hay errores en producción?», «¿qué está fallando?», «mira este error de Sentry», «¿cuántos usuarios afecta?», tras un despliegue, o antes de depurar un bug reportado."
 ---
 
 # Sentry
