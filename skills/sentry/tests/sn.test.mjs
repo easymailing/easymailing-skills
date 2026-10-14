@@ -104,3 +104,16 @@ test("8 SENTRY_PROJECTS cambia los proyectos por defecto; id inválido da error 
   const r = e.run("issue", "../../users");
   assert.equal(r.status, 2); assert.match(r.stderr, /uso|id/i);
 });
+
+test("9 resolver: sin --confirmado no escribe; con --confirmado hace PUT status=resolved", () => {
+  const e = entorno({ "GET /organizations/easymailing/shortids/CUSTOMER-APP-1A/": { groupId: "42" }, "PUT /organizations/easymailing/issues/42/": { id: "42", status: "resolved" } });
+  const r1 = e.run("resolver", "CUSTOMER-APP-1A");
+  assert.notEqual(r1.status, 0); assert.match(r1.stderr, /--confirmado/);
+  assert.ok(!e.calls().some((c) => c[1] !== "GET"), "sin confirmar no hay escrituras");
+  const r2 = e.run("resolver", "CUSTOMER-APP-1A", "--confirmado");
+  assert.equal(r2.status, 0, r2.stderr);
+  const put = e.calls().find((c) => c[1] === "PUT");
+  assert.equal(put[2], "/organizations/easymailing/issues/42/");
+  assert.equal(put[3], "--data"); assert.deepEqual(JSON.parse(put[4]), { status: "resolved" });
+  assert.deepEqual(JSON.parse(r2.stdout), { id: "CUSTOMER-APP-1A", estado: "resolved" });
+});

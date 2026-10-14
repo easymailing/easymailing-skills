@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// sn — Sentry de Easymailing en SOLO LECTURA sobre `em-api sentry`: incidencias, detalle con el último evento, eventos y resumen diario.
+// sn — Sentry de Easymailing sobre `em-api sentry`: incidencias, detalle con el último evento, eventos y resumen diario.
+// Única escritura: `resolver`, que exige --confirmado (solo cuando Sergio lo pide).
 // Nunca devuelve datos de la petición más allá de URL y método (cookies, cabeceras y cuerpo pueden llevar sesiones de clientes),
 // ni datos de usuario de los eventos.
 import { spawnSync } from "node:child_process";
@@ -19,7 +20,12 @@ function get(ruta, params = {}) {
   if (r.status !== 0) fallo(`GET ${ruta} falló${r.stderr ? `: ${r.stderr.trim()}` : ""}`);
   return r.stdout.trim() ? JSON.parse(r.stdout) : {};
 }
-const opciones = (argv) => { const o = {}; const pos = []; for (let i = 0; i < argv.length; i++) { if (argv[i].startsWith("--")) { o[argv[i].slice(2)] = argv[i + 1]; i++; } else pos.push(argv[i]); } return { o, pos }; };
+function put(ruta, data) {
+  const r = spawnSync(EM_API, ["sentry", "PUT", ruta, "--data", JSON.stringify(data)], { encoding: "utf8" });
+  if (r.status !== 0) fallo(`PUT ${ruta} falló${r.stderr ? `: ${r.stderr.trim()}` : ""}`);
+  return r.stdout.trim() ? JSON.parse(r.stdout) : {};
+}
+const opciones = (argv) => { const o = {}; const pos = []; for (let i = 0; i < argv.length; i++) { if (argv[i].startsWith("--")) { const k = argv[i].slice(2); if (argv[i + 1] === undefined || argv[i + 1].startsWith("--")) o[k] = true; else { o[k] = argv[i + 1]; i++; } } else pos.push(argv[i]); } return { o, pos }; };
 const imprimir = (x) => process.stdout.write(JSON.stringify(x, null, 2) + "\n");
 const proyectos = (o) => { const ps = o.proyecto ? [o.proyecto] : PROYECTOS; for (const p of ps) if (!SLUG.test(p)) fallo(`proyecto no válido: ${p}`, 2); return ps; };
 const incidencia = (i) => ({ id: i.shortId, titulo: i.title, culprit: i.culprit, nivel: i.level, proyecto: i.project?.slug, eventos: Number(i.count), usuarios: i.userCount, primera_vez: i.firstSeen, ultima_vez: i.lastSeen, enlace: i.permalink });
@@ -71,10 +77,18 @@ switch (cmd) {
     imprimir({ fecha: new Date().toISOString(), proyectos: out });
     break;
   }
+  case "resolver": {
+    const ref = pos[0];
+    if (!o.confirmado) fallo("resolver escribe en Sentry: añade --confirmado solo si Sergio lo ha pedido explícitamente");
+    const g = idGrupo(ref);
+    const r = put(`/organizations/${ORG}/issues/${g}/`, { status: "resolved" });
+    imprimir({ id: ref, estado: r.status || "resolved" });
+    break;
+  }
   case "proyectos":
     imprimir({ proyectos: get(`/organizations/${ORG}/projects/`).map((p) => ({ slug: p.slug, plataforma: p.platform })) });
     break;
   default:
-    process.stderr.write("uso: sn <issues [--proyecto P] [--query \"is:unresolved\"] [--orden date|freq|new] [--periodo 24h] [--max N] | issue <ID> | eventos <ID> [--max N] | resumen [--proyecto P] | proyectos>\n");
+    process.stderr.write("uso: sn <issues [--proyecto P] [--query \"is:unresolved\"] [--orden date|freq|new] [--periodo 24h] [--max N] | issue <ID> | eventos <ID> [--max N] | resumen [--proyecto P] | proyectos | resolver <ID> --confirmado>\n");
     process.exit(cmd ? 2 : 0);
 }
