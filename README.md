@@ -22,6 +22,7 @@ npx skills install https://github.com/easymailing/easymailing-skills.git -g --fo
 |---|---|
 | [`em-capture-idea`](skills/capture-idea/) | Captura material para contenido desde URLs, texto libre, bookmarks de Twitter o trending |
 | [`em-chartmogul`](skills/chartmogul/) | ChartMogul de Easymailing en solo lectura: MRR, ARR, ARPA, número de clientes, tasas de bajas (clientes y MRR), LTV, búsqueda de clientes y  |
+| [`em-sentry`](skills/sentry/) | Errores de producción en Sentry (solo lectura): incidencias, detalle con stacktrace, eventos y resumen de 24 h de `easymailing` y `customer-app` |
 | [`dataforseo`](skills/dataforseo/) | Datos SEO de DataForSEO por línea de comandos — volumen y dificultad de keywords, backlinks, SERP, competidores, tendencias, auditorías técn |
 | [`easymailing-admin-api`](skills/easymailing-admin-api/) | Consulta la Admin API interna de Easymailing: dashboard de plataforma, delivery servers y scores, IP blocks, salud/métricas/issues de una ap |
 | [`easymailing-kb`](skills/easymailing-kb/) | Busca en la documentación pública de Easymailing (help center, blog, API pública, integraciones, precios, legal) y es la fuente de verdad pa |
