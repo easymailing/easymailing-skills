@@ -12,6 +12,8 @@ S
 cat > "$T/bin/op" <<'S'
 #!/bin/bash
 echo "op $* SA=$OP_SERVICE_ACCOUNT_TOKEN" >> "$EMT/op.log"
+if [ -f "$EMT/op.lento.una" ]; then rm -f "$EMT/op.lento.una"; sleep 5; fi
+[ -f "$EMT/op.lento" ] && sleep 5
 case "$*" in *username*) echo "agente@easymailing.com";; *) echo "SECRETO-FAKE-123";; esac
 S
 cat > "$T/bin/curl" <<'S'
@@ -100,4 +102,13 @@ rm -f "$T/curl.n" "$T"/curl.resp.*; printf '\n302' > "$T/curl.resp.1"; printf 'l
 run "$REPO/bin/em-api" storyblok-cdn GET /stories/x >/dev/null 2>&1; rc=$?
 { [ $rc != 0 ] && [ "$(cat "$T/curl.n" 2>/dev/null)" = 1 ]; } && ok "15c redirección con userinfo" || ko "15c redirección con userinfo"
 rm -f "$T/curl.n" "$T"/curl.resp.*
+# 16. 1Password no responde: em-secret corta a los EM_SECRET_TIMEOUT s, reintenta una vez y da un error claro
+rm -rf "$T/tmp"/*; rm -f "$T/op.log"; touch "$T/op.lento"; t0=$(date +%s)
+err=$( (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SECRET_TIMEOUT=1; "$REPO/bin/em-secret" storyblok credential 2>&1 >/dev/null) ); rc=$?; dt=$(( $(date +%s) - t0 ))
+{ [ $rc = 3 ] && [ $dt -lt 5 ] && grep -q "no responde" <<<"$err" && [ "$(grep -c storyblok "$T/op.log")" = 2 ]; } && ok "16 timeout con reintento" || ko "16 timeout con reintento (rc=$rc dt=$dt)"
+rm -f "$T/op.lento"
+# 17. primer intento lento, el reintento responde
+rm -rf "$T/tmp"/*; rm -f "$T/op.log"; touch "$T/op.lento.una"
+out=$( (export EMT="$T" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" EM_SECRET_TIMEOUT=1; "$REPO/bin/em-secret" storyblok credential 2>/dev/null) ); rc=$?
+{ [ $rc = 0 ] && [ "$out" = "SECRETO-FAKE-123" ]; } && ok "17 reintento tras timeout" || ko "17 reintento tras timeout (rc=$rc)"
 echo "== $pass OK, $fail fallos"; rm -rf "$T"; [ $fail -eq 0 ]
