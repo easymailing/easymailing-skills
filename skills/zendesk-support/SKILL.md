@@ -16,7 +16,10 @@ $ZS tickets [--estado abiertos|pendientes|nuevos|espera|resueltos] [--desde AAAA
 $ZS ticket <id>                                # ticket + conversación completa
 $ZS buscar "texto"                             # búsqueda en tickets
 $ZS responder <id> --interno|--publico --texto "..." --confirmado   # ESCRIBE: solo con el sí de Sergio
+$ZS borrador <id> --texto "..." --confirmado                       # ESCRIBE una nota interna marcada como borrador
 ```
+
+- **Borradores**: la API de Zendesk no tiene borradores de respuesta. Cuando Sergio pida «prepara/crea la respuesta sin enviarla», usa `borrador`: deja una nota **interna** (el cliente no la ve) encabezada «BORRADOR DE RESPUESTA — no enviado al cliente» para que la revise y la envíe él desde Zendesk. Nunca uses `responder --publico` para un borrador.
 
 - La salida incluye datos de clientes: úsalos para responder a Sergio, **nunca** los copies al repo de conocimiento ni a ficheros (solo agregados).
 - Para métricas históricas o informes de satisfacción, di que esta skill no los cubre.
