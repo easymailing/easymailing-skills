@@ -23,12 +23,12 @@ if(!(k in r)){process.stderr.write("em-api: HTTP 404");process.exit(1)}process.s
 }
 const ISSUE = { id: "42", shortId: "CUSTOMER-APP-1A", title: "TypeError: x is undefined", culprit: "app/pages/contacts.vue", level: "error", status: "unresolved", count: "120", userCount: 7, firstSeen: "2026-10-01T10:00:00Z", lastSeen: "2026-10-13T09:00:00Z", permalink: "https://easymailing.sentry.io/issues/42/", project: { slug: "customer-app" } };
 
-test("1 issues: por defecto los dos proyectos, sin resolver, solo GET", () => {
-  const e = entorno({ "GET /projects/easymailing/easymailing/issues/": [ISSUE], "GET /projects/easymailing/customer-app/issues/": [ISSUE] });
+test("1 issues: por defecto los tres proyectos, sin resolver, solo GET", () => {
+  const e = entorno({ "GET /projects/easymailing/easymailing/issues/": [ISSUE], "GET /projects/easymailing/customer-app/issues/": [ISSUE], "GET /projects/easymailing/website-nuxt-5w/issues/": [] });
   const r = e.run("issues");
   assert.equal(r.status, 0, r.stderr);
   const c = e.calls();
-  assert.deepEqual(c.map((x) => x[2].split("?")[0]), ["/projects/easymailing/easymailing/issues/", "/projects/easymailing/customer-app/issues/"]);
+  assert.deepEqual(c.map((x) => x[2].split("?")[0]), ["/projects/easymailing/easymailing/issues/", "/projects/easymailing/customer-app/issues/", "/projects/easymailing/website-nuxt-5w/issues/"]);
   assert.ok(c.every((x) => x[0] === "sentry" && x[1] === "GET"));
   assert.match(decodeURIComponent(c[0][2]), /query=is:unresolved/);
   const o = JSON.parse(r.stdout);
@@ -80,14 +80,14 @@ test("5 eventos <id> lista eventos sin datos de petición", () => {
 });
 
 test("6 resumen: nuevas y más frecuentes de las últimas 24 h por proyecto", () => {
-  const e = entorno({ "GET /projects/easymailing/easymailing/issues/": [ISSUE], "GET /projects/easymailing/customer-app/issues/": [] });
+  const e = entorno({ "GET /projects/easymailing/easymailing/issues/": [ISSUE], "GET /projects/easymailing/customer-app/issues/": [], "GET /projects/easymailing/website-nuxt-5w/issues/": [] });
   const r = e.run("resumen");
   assert.equal(r.status, 0, r.stderr);
   const qs = e.calls().map((c) => decodeURIComponent(c[2]));
   assert.ok(qs.some((q) => /firstSeen:-24h/.test(q)), "pide las nuevas");
   assert.ok(qs.some((q) => /sort=freq/.test(q) && /statsPeriod=24h/.test(q)), "pide las frecuentes");
   const o = JSON.parse(r.stdout);
-  assert.deepEqual(Object.keys(o.proyectos), ["easymailing", "customer-app"]);
+  assert.deepEqual(Object.keys(o.proyectos), ["easymailing", "customer-app", "website-nuxt-5w"]);
 });
 
 test("7 proyectos lista los de la organización", () => {

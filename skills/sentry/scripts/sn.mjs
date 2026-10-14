@@ -9,7 +9,7 @@ import { join } from "node:path";
 
 const EM_API = process.env.EM_API_BIN || (() => { const r = join(import.meta.dirname, "..", "..", "..", "bin", "em-api"); return existsSync(r) ? r : "em-api"; })();
 const ORG = process.env.SENTRY_ORG || "easymailing";
-const PROYECTOS = (process.env.SENTRY_PROJECTS || "easymailing,customer-app").split(",").map((s) => s.trim()).filter(Boolean);
+const PROYECTOS = (process.env.SENTRY_PROJECTS || "easymailing,customer-app,website-nuxt-5w").split(",").map((s) => s.trim()).filter(Boolean);
 const SLUG = /^[a-z0-9][a-z0-9_-]*$/;
 const ID = /^([0-9]+|[A-Z0-9][A-Z0-9-]*-[A-Z0-9]+)$/;
 
