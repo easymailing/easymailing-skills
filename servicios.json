@@ -201,6 +201,6 @@
       "campo": "credential",
       "env": "SENTRY_API_TOKEN"
     },
-    "check": "/organizations/easymailing/"
+    "check": "/organizations/easymailing/projects/"
   }
 }
